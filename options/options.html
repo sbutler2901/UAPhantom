@@ -1,20 +1,68 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <meta charset="utf-8">
-  </head>
+    <head>
+        <meta charset="utf-8">
 
-  <body>
+        <style>
+            body {
+                background-color: #ccc;
+            }
+            label {
+                display: block;
+                margin: 15px;
+            }
+            /*form {
+                width: 75%;
+            }*/
+            #chng-freq {
+                margin-left: 75px;
+            }
+            button {
+                margin-top: 25px;
+                margin-left: 15px;
+            }
+            textarea {
+                margin-left: 50px;
+                width: 90%;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Settings:</h2>
+        <form action="submit">
+            <label>
+                <input id="disabled" type="checkbox" name="disabled"/>
+                Disable Spoofing?
+            </label>
 
-    <form action="submit">
-        <label>Border color<input type="text" id="color" ></label>
-        <label>User Agents<textarea id="ua-textarea" name="user_agents"></textarea></label>
-        <button type="submit">Save</button>
-    </form>
+            <label>User Agents: <br/>
+                <textarea id="ua-textarea" name="user_agents"></textarea>
+            </label>
+            <label>
+                <input id="chng-freq-chk" type="checkbox" name="change_freq"/>
+                Change periodically?
+            </label>
+            <label id="chng-freq">Change every <input id="chng-freq-time" type="text" name="change_freq"/>mins</label>
+            <h4>Filters:</h4>
+            <div>
+                <label>
+                    <input id="same-device" type="checkbox" name="same_device"/>
+                    Only use same device (desktop, tablet, phone, etc.)
+                </label>
+                <label>
+                    <input id="same-os" type="checkbox" name="same_os"/>
+                    Only use same OS (Linux, macOS, Windows, etc.)
+                </label>
+                <label>
+                    <input id="same-browser" type="checkbox" name="same_browser"/>
+                    Only use same browser (Firefox, Chrome, Opera, etc.)
+                </label>
 
-    <script src="options.js"></script>
+            </div>
+            <button type="submit">Save</button>
+        </form>
 
-  </body>
-
+        <script src="options.js"></script>
+    </body>
 </html>
