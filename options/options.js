@@ -107,6 +107,8 @@ function restoreOptions() {
         else
             document.querySelector("#same-browser").checked = res.should_only_use_same_browser;
     }, onError);
+
+    document.querySelector("#current-ua").innerText = bgpage.currentUA;
 }
 
 const bgpage = browser.extension.getBackgroundPage();
