@@ -9,7 +9,7 @@ function onError(error) {
 function rewriteUserAgentHeader(e) {
   for (var header of e.requestHeaders) {
     if (header.name.toLowerCase() == "user-agent") {
-      header.value = defaultUserAgents;
+      header.value = currentUA;
     }
   }
   return {requestHeaders: e.requestHeaders};
@@ -46,8 +46,16 @@ function getDisabled(callback) {
   });
 }
 
-function getNewUA() {
+//The maximum is exclusive and the minimum is inclusive
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
 
+function getNewUA() {
+    currentUA = userAgents[getRandomInt(0, userAgents.length)];
+    //ualog(currentUA);
     /*userAgents.forEach(function(item, index, array) {
       ualog(index + ": " + item);
     });*/
@@ -55,4 +63,4 @@ function getNewUA() {
 
 var shouldDebug = false;
 var defaultUserAgents = "Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16";
-
+var currentUA;

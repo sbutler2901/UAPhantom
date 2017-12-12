@@ -4,21 +4,26 @@
     <head>
         <meta charset="utf-8">
     <style>
-        html {
+        body {
+            width: 200px;
             background-color: #464646;
             color: white;
         }
-        p{
+        p {
             color: white;
             font-family: helvetica;
             text-align: center;
         }
-        body {
-            width: 200px;
+        p#title {
+            font-size: 18px;
+            margin-top: 15px;
+            margin-bottom: 0px;
         }
-        button:hover {
-            background-color: #1e1e1e;
-            color: white;
+        p.disabled {
+            color: red;
+        }
+        p.enabled {
+            color: rgb(142,255,79);
         }
         button {
             display: block;
@@ -31,6 +36,10 @@
             padding: 5px 0px 5px 5px;
             font-size: 12px;
         }
+        button:hover {
+            background-color: #1e1e1e;
+            color: white;
+        }
         img {
             height: 15px;
             width: 15px;
@@ -38,11 +47,11 @@
             margin-top: 5px;
             margin-left: 2px;
         }
-
     </style>
     </head>
     <body>
-        <p id="is-disabled"></p>
+        <p id="title">Phantom</p>
+        <p id="isdisabled-notifier"></p>
         <div>
             <img id="disable-img" src='../icons/disable.png' alt="status">
             <button id="disable-btn" type="button">Disable</button>

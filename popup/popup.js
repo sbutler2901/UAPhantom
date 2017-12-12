@@ -14,10 +14,14 @@ function openSettings() {
 
 // Updates the html affected when spoofing is enabled / disabled
 function updateIsDisabledUI(isDisabled) {
-    var isDisabledString = "UASpoofer: spoofing!";
+    var isDisabledString = "Spoofing!";
+    var disabledNotifier = document.querySelector("#isdisabled-notifier");
 
     if ( isDisabled ) {
-        isDisabledString = "UASpoofer: currently disabled";
+        isDisabledString = "Disabled";
+
+        disabledNotifier.classList.add('disabled');
+        disabledNotifier.classList.remove('enabled');
         document.querySelector("#disable-btn").innerText = "Enable";
         document.querySelector("#disable-img").src = "../icons/disable.png";
         document.querySelector("#disable-btn").addEventListener("click", function enabling() {
@@ -25,6 +29,8 @@ function updateIsDisabledUI(isDisabled) {
             this.removeEventListener("click", enabling);
         });
     } else {
+        disabledNotifier.classList.add('enabled');
+        disabledNotifier.classList.remove('disabled');
         document.querySelector("#disable-btn").innerText = "Disable";
         document.querySelector("#disable-img").src = "../icons/enable.png";
         document.querySelector("#disable-btn").addEventListener("click", function disabling() {
@@ -33,7 +39,7 @@ function updateIsDisabledUI(isDisabled) {
         });
     }
 
-    document.querySelector("#is-disabled").innerText = isDisabledString;
+    disabledNotifier.innerText = isDisabledString;
 }
 
 // tmp ua
