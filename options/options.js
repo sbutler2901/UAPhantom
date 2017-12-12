@@ -8,7 +8,7 @@ function onError(error) {
 }
 
 function printSavedOptions() {
-    if ( shouldDebug ) {
+    if ( bgpage.shouldDebug ) {
         ualog("Printing saved options");
         ualog("Storage set: disabled: " + document.querySelector("#disabled").checked);
         ualog("Storage set: user agents: " + document.querySelector("#ua-textarea").value);
@@ -37,7 +37,7 @@ function saveOptions(e) {
 function restoreOptions() {
 
     browser.storage.local.get("disabled").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: disabled: " + res.disabled);
 
         if ( res.disabled === undefined )
@@ -47,7 +47,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("user_agents").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: user agents: " + res.user_agents);
 
         if ( res.user_agents === undefined )
@@ -57,7 +57,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("should_change_freq").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: should freq: " + res.should_change_freq);
 
         if ( res.should_change_freq === undefined )
@@ -67,7 +67,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("change_freq_time").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: freq interval: " + res.change_freq_time);
 
         if ( res.change_freq_time === undefined )
@@ -77,7 +77,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("should_only_use_same_device").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: same device: " + res.should_only_use_same_device);
 
         if ( res.should_only_use_same_device === undefined )
@@ -87,7 +87,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("should_only_use_same_os").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: same os: " + res.should_only_use_same_os);
 
         if ( res.should_only_use_same_os === undefined )
@@ -97,7 +97,7 @@ function restoreOptions() {
     }, onError);
 
     browser.storage.local.get("should_only_use_same_browser").then((res) => {
-        if ( shouldDebug )
+        if ( bgpage.shouldDebug )
             ualog("Storage Get: same browser: " + res.should_only_use_same_browser);
 
         if ( res.should_only_use_same_browser === undefined )
@@ -108,9 +108,11 @@ function restoreOptions() {
 }
 
 // tmp ua
-const shouldDebug = false;
+
+const bgpage = browser.extension.getBackgroundPage();
+
 const defaultIsDisabled = false;
-const defaultUserAgents = "Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16";
+const defaultUserAgents = bgpage.defaultUserAgents;
 const defaultShouldChangeFreq = false;
 const defaultChangeFreq = 30;
 const defaultShouldUseSameDevice = true;
