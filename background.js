@@ -1,3 +1,5 @@
+'use strict';
+
 function ualog(content) {
   console.log("UASpoofer: " + content);
 }
@@ -17,20 +19,16 @@ function rewriteUserAgentHeader(e) {
     return {requestHeaders: e.requestHeaders};
 }
 
-browser.webRequest.onBeforeSendHeaders.addListener(
-  rewriteUserAgentHeader,
-  {urls: ["<all_urls>"]},
-  ["blocking", "requestHeaders"]
-);
-
 // Enables spoofing and passes isDisabled (true) to callback
 function disable(callback) {
     browser.storage.local.set({
         disabled: true
     }).then(() => {
-        if ( callback !== undefined )
-            callback(true);
+
         isDisabled = true;
+        if ( callback !== undefined )
+            callback(isDisabled);
+
     }, onError);
 }
 
@@ -39,22 +37,18 @@ function enable(callback) {
     browser.storage.local.set({
         disabled: false
     }).then(() => {
-        if ( callback !== undefined )
-            callback(false);
+
         isDisabled = false;
+        if ( callback !== undefined )
+            callback(isDisabled);
+
     }, onError);
 }
 
-// Gets whether spoofing is enabled or disable
-function getDisabled(callback) {
-    ualog(typeof callback);
+// Gets whether spoofing is enabled or disable and sets global value
+function getDisabled() {
     browser.storage.local.get("disabled").then((res) => {
-        if ( callback !== undefined ) {
-            callback(res.disabled);
-            ualog("test 0");
-        }
-        ualog("testing");
-        return res.disabled;
+        isDisabled = res.disabled;
     });
 }
 
@@ -65,15 +59,81 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function excludeOtherOSes() {
+    if ( navigator.oscpu.includes("Mac") ) {
+
+        userAgents.forEach(function (item, index, array) {
+            if ( item.includes("Macintosh") )
+                availableUAs.push(item);
+        });
+
+    } else if ( naviagtor.oscpu.includes("Win") ) {
+
+        userAgents.forEach(function (item, index, array) {
+            if ( item.includes("Windows") )
+                availableUAs.push(item);
+        });
+
+    } else if ( navigator.oscpu.includes("Linux") ) {
+
+        userAgents.forEach(function (item, index, array) {
+            if ( item.includes("Linux") )
+                availableUAs.push(item);
+        });
+
+    } else {
+        ualog("Unknown OS. Ignoring Setting");
+    }
+}
+
+function excludeOtherBrowsers() {
+
+}
+
+function setAvailableUAs() {
+    browser.storage.local.get([
+        "should_only_use_same_device",
+        "should_only_use_same_os",
+        "should_only_use_same_browser"]).then((res) => {
+
+            /*if ( res.should_only_use_same_device ) {
+            }*/
+            if ( res.should_only_use_same_os ) {
+                excludeOtherOSes();
+            }
+            if ( res.should_only_use_same_browser ) {
+                exlcludeOtherBrowsers();
+            }
+
+        }, onError);
+}
+
 function getNewUA() {
-    currentUA = userAgents[getRandomInt(0, userAgents.length)];
-    //ualog(currentUA);
+    if ( availableUAs.length < 2 ) {
+        currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
+        ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
+    } else {
+        currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
+    }
+    /*ualog(navigator.platform);
+    ualog(navigator.oscpu);
+    ualog(navigator.appVersion);*/
     /*userAgents.forEach(function(item, index, array) {
       ualog(index + ": " + item);
     });*/
 }
 
 var shouldDebug = false;
-var defaultUserAgents = "Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16";
 var currentUA;
-var isDisabled = getDisabled();
+var availableUAs = [];
+var isDisabled;
+
+getDisabled();
+setAvailableUAs();
+getNewUA();
+
+browser.webRequest.onBeforeSendHeaders.addListener(
+  rewriteUserAgentHeader,
+  {urls: ["<all_urls>"]},
+  ["blocking", "requestHeaders"]
+);

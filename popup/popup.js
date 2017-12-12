@@ -50,5 +50,5 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#settings-btn").addEventListener("click", function () {
         browser.runtime.openOptionsPage();
     });
-    bgpage.getDisabled(updateIsDisabledUI);
+    updateIsDisabledUI(bgpage.isDisabled);
 });
