@@ -50,10 +50,11 @@ function restoreOptions() {
         if ( bgpage.shouldDebug )
             ualog("Storage Get: user agents: " + res.user_agents);
 
-        if ( res.user_agents === undefined )
+        if ( res.user_agents === undefined ) {
             document.querySelector("#ua-textarea").value = defaultUserAgents;
-        else
+        } else {
             document.querySelector("#ua-textarea").value = res.user_agents;
+        }
     }, onError);
 
     browser.storage.local.get("should_change_freq").then((res) => {
@@ -112,7 +113,7 @@ function restoreOptions() {
 const bgpage = browser.extension.getBackgroundPage();
 
 const defaultIsDisabled = false;
-const defaultUserAgents = bgpage.defaultUserAgents;
+var defaultUserAgents = bgpage.defaultUserAgents;
 const defaultShouldChangeFreq = false;
 const defaultChangeFreq = 30;
 const defaultShouldUseSameDevice = true;
