@@ -4,20 +4,45 @@
     <head>
         <meta charset="utf-8">
     <style>
+        html {
+            background-color: #464646;
+            color: white;
+        }
+        p{
+            color: white;
+            font-family: helvetica;
+            text-align: center;
+        }
         body {
-            width: 150px;
+            width: 200px;
+        }
+        button:hover {
+            background-color: #1e1e1e;
+            color: white;
         }
         button {
             display: block;
             margin: auto;
+            font-family: verdana;
+            border: none;
+            width: 200px;
+            background-color: #464646;
+            color: white;
+            padding: 5px 16px 8px;
+            padding-left: 50px;
+            font-size: 12px;
+        }
+        img {
+            height: 15px;
+            width: 15px;
         }
     </style>
     </head>
     <body>
         <p id="is-disabled"><p>
-        <button id="disable-btn" type="button">Disable</button>
-        <button id="new-ua-btn" type="button">New UA</button>
-        <button id="settings-btn" type="button">Settings</button>
+        <button id="disable-btn" type="button"><img src='../icons/disable.png'>  Disable</button>
+        <button id="new-ua-btn" type="button"><img src='../icons/add.png'>  New UA</button>
+        <button id="settings-btn" type="button"><img src='../icons/gear.png'>  Settings</button>
         <script src="popup.js"></script>
     </body>
 </html>
