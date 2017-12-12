@@ -48,7 +48,11 @@ function getDisabled(callback) {
 
 function getNewUA() {
 
+    /*userAgents.forEach(function(item, index, array) {
+      ualog(index + ": " + item);
+    });*/
 }
 
 var shouldDebug = false;
 var defaultUserAgents = "Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16";
+
