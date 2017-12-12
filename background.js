@@ -7,12 +7,14 @@ function onError(error) {
 }
 
 function rewriteUserAgentHeader(e) {
-  for (var header of e.requestHeaders) {
-    if (header.name.toLowerCase() == "user-agent") {
-      header.value = currentUA;
+    if ( !isDisabled ) {
+        for (var header of e.requestHeaders) {
+            if (header.name.toLowerCase() == "user-agent") {
+                header.value = currentUA;
+            }
+        }
     }
-  }
-  return {requestHeaders: e.requestHeaders};
+    return {requestHeaders: e.requestHeaders};
 }
 
 browser.webRequest.onBeforeSendHeaders.addListener(
@@ -23,27 +25,37 @@ browser.webRequest.onBeforeSendHeaders.addListener(
 
 // Enables spoofing and passes isDisabled (true) to callback
 function disable(callback) {
-  browser.storage.local.set({
-    disabled: true
-  }).then(() => {
-    callback(true);
-  }, onError);
+    browser.storage.local.set({
+        disabled: true
+    }).then(() => {
+        if ( callback !== undefined )
+            callback(true);
+        isDisabled = true;
+    }, onError);
 }
 
 // Enables spoofing and passes isDisabled (false) to callback
 function enable(callback) {
-  browser.storage.local.set({
-    disabled: false
-  }).then(() => {
-    callback(false);
-  }, onError);
+    browser.storage.local.set({
+        disabled: false
+    }).then(() => {
+        if ( callback !== undefined )
+            callback(false);
+        isDisabled = false;
+    }, onError);
 }
 
 // Gets whether spoofing is enabled or disable
 function getDisabled(callback) {
-  browser.storage.local.get("disabled").then((res) => {
-    callback(res.disabled);
-  });
+    ualog(typeof callback);
+    browser.storage.local.get("disabled").then((res) => {
+        if ( callback !== undefined ) {
+            callback(res.disabled);
+            ualog("test 0");
+        }
+        ualog("testing");
+        return res.disabled;
+    });
 }
 
 //The maximum is exclusive and the minimum is inclusive
@@ -64,3 +76,4 @@ function getNewUA() {
 var shouldDebug = false;
 var defaultUserAgents = "Opera/9.80 (X11; Linux i686; Ubuntu/14.10) Presto/2.12.388 Version/12.16";
 var currentUA;
+var isDisabled = getDisabled();
