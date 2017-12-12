@@ -19,12 +19,14 @@ function updateIsDisabledUI(isDisabled) {
     if ( isDisabled ) {
         isDisabledString = "UASpoofer: currently disabled";
         document.querySelector("#disable-btn").innerText = "Enable";
+        document.querySelector("#disable-btn > img").src = "../icons/disable.png";
         document.querySelector("#disable-btn").addEventListener("click", function enabling() {
             bgpage.enable(updateIsDisabledUI);
             this.removeEventListener("click", enabling);
         });
     } else {
         document.querySelector("#disable-btn").innerText = "Disable";
+        document.querySelector("#disable-btn > img").src = "../icons/enable.png";
         document.querySelector("#disable-btn").addEventListener("click", function disabling() {
             bgpage.disable(updateIsDisabledUI);
             this.removeEventListener("click", disabling);
