@@ -13,7 +13,7 @@
   ],
 
   "background": {
-    "scripts": ["userAgents.js", "background.js"]
+    "scripts": ["helpers/userAgents.js", "background.js"]
   },
 
   "options_ui": {

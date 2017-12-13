@@ -38,33 +38,27 @@ function saveOptions(e) {
 
     // Updating storage
     browser.storage.local.set({
-        disabled: shouldDisable,
         should_change_freq: shouldChangeFreq,
         change_freq_time: changeFreqTime,
         //should_only_use_same_device: document.querySelector("#same-device").checked,
         should_only_use_same_os: shouldSameOS,
         should_only_use_same_browser: shouldSameBrowser
     }).then(function () {
-        if ( bgpage.shouldDebug )
-            printSavedOptions;
+
+        // Check isDisabled change
+        if ( shouldDisable != bgpage.isDisabled ) {
+            if ( shouldDisable )
+                bgpage.disable();
+            else
+                bgpage.enable();
+        }
+
+        // Only run parser and update UAs if settings have changed
+        if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
+            bgpage.setAvailableUAs();
+
     }, onError);
 
-    // Check isDisabled change
-    if ( shouldDisable != bgpage.isDisabled ) {
-        bgpage.isDisabled = shouldDisable;
-        bgpage.updateBrowserActionIcon();
-    }
-
-    // Check should periodicallly change UA
-    if ( !shouldChangeFreq )
-        bgpage.removePeriodicChange();
-    else if ( !bgpage.isPeriodicAlarmActive )
-        bgpage.initPeriodicChange();
-
-    // Check available
-    if ( shouldSameOS != bgpage.onlySameOS ||
-        shouldSameBrowser != bgpage.onlySameBrowser
-    ) bgpage.setAvailableUAs();
 }
 
 function restoreOptions() {
