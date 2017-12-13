@@ -28,6 +28,7 @@ function updateIsDisabledUI(isDisabled) {
             bgpage.enable(updateIsDisabledUI);
             this.removeEventListener("click", enabling);
         });
+
     } else {
         disabledNotifier.classList.add('enabled');
         disabledNotifier.classList.remove('disabled');

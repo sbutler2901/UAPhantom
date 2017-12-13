@@ -19,6 +19,13 @@ function rewriteUserAgentHeader(e) {
     return {requestHeaders: e.requestHeaders};
 }
 
+function updateBrowserActionIcon() {
+    if ( isDisabled )
+        browser.browserAction.setIcon({path: baDisabledIconPath});
+    else
+        browser.browserAction.setIcon({path: baEnabledIconPath});
+}
+
 // Enables spoofing and passes isDisabled (true) to callback
 function disable(callback) {
     browser.storage.local.set({
@@ -26,6 +33,8 @@ function disable(callback) {
     }).then(() => {
 
         isDisabled = true;
+        updateBrowserActionIcon();
+
         if ( callback !== undefined )
             callback(isDisabled);
 
@@ -39,6 +48,8 @@ function enable(callback) {
     }).then(() => {
 
         isDisabled = false;
+        updateBrowserActionIcon();
+
         if ( callback !== undefined )
             callback(isDisabled);
 
@@ -49,6 +60,10 @@ function enable(callback) {
 function getDisabled() {
     browser.storage.local.get("disabled").then((res) => {
         isDisabled = res.disabled;
+        if ( isDisabled ) 
+            browser.browserAction.setIcon({path: baDisabledIconPath});
+        else
+            browser.browserAction.setIcon({path: baEnabledIconPath});
     });
 }
 
@@ -104,21 +119,30 @@ function setAvailableUAs() {
             if ( res.should_only_use_same_browser ) {
                 exlcludeOtherBrowsers();
             }
-
+            getNewUA();
         }, onError);
 }
 
 function removePeriodicChange() {
-    browser.alarms.clear("ua-change-alarm");
+    //browser.alarms.clear("ua-change-alarm");
+    browser.alarms.clearAll();
+    browser.alarms.onAlarm.removeListener(handleUAChangeAlarm);
+}
+
+function handleUAChangeAlarm(alarmInfo) {
+    getNewUA();
 }
 
 function initPeriodicChange() {
-    browser.local.storage.get(["should_change_freq", "change_freq_time"]).then((res) => {
+    browser.storage.local.get(["should_change_freq", "change_freq_time"]).then((res) => {
         if ( res.should_change_freq ) {
             browser.alarms.create("ua-change-alarm", {
-                res.change_freq_time
+                periodInMinutes: res.change_freq_time
             });
+            browser.alarms.onAlarm.addListener(handleUAChangeAlarm);
         }
+        isPeriodicAlarmActive = res.should_change_freq;
+
     }, onError);
 }
 
@@ -126,25 +150,20 @@ function getNewUA() {
     if ( availableUAs.length < 2 ) {
         currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
         ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
-    } else {
+    } else
         currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
-    }
-    /*ualog(navigator.platform);
-    ualog(navigator.oscpu);
-    ualog(navigator.appVersion);*/
-    /*userAgents.forEach(function(item, index, array) {
-      ualog(index + ": " + item);
-    });*/
 }
 
 var shouldDebug = false;
 var currentUA;
 var availableUAs = [];
 var isDisabled;
+var isPeriodicAlarmActive;
+const baEnabledIconPath = "icons/PhantomGreen.png";
+const baDisabledIconPath = "icons/PhantomRed.png";
 
 getDisabled();
 setAvailableUAs();
-getNewUA();
 initPeriodicChange();
 
 browser.webRequest.onBeforeSendHeaders.addListener(

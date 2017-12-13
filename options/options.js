@@ -36,12 +36,17 @@ function saveOptions(e) {
         should_only_use_same_browser: document.querySelector("#same-browser").checked
     }).catch(onError);
 
-    changeFreqTime = document.querySelector("#chng-freq-time").value;
-    if ( changeFreqTime <= 0 || changeFreqTime > 60 )
+    if ( !shouldChangeFreq )
+        bgpage.removePeriodicChange();
+    else if ( !bgpage.isPeriodicAlarmActive )
+        bgpage.initPeriodicChange();
+
+    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
+    if ( Number.isNaN(changeFreqTime) || changeFreqTime < changeFreqTimeMin || changeFreqTime > changeFreqTimeMax )
         changeFreqTime = defaultChangeFreq;
 
     browser.storage.local.set({
-        change_freq_time: changeFreqtime
+        change_freq_time: changeFreqTime
     }).then(function () {
         if ( bgpage.shouldDebug )
             printSavedOptions;
@@ -128,6 +133,8 @@ const bgpage = browser.extension.getBackgroundPage();
 
 const defaultIsDisabled = false;
 const defaultShouldChangeFreq = false;
+const changeFreqTimeMin = 1;
+const changeFreqTimeMax = 60;
 const defaultChangeFreq = 30;
 //const defaultShouldUseSameDevice = true;
 const defaultShouldUseSameOS = false;
