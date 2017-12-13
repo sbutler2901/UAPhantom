@@ -9,30 +9,43 @@ function onError(error) {
 }
 
 function printSavedOptions() {
-    if ( bgpage.shouldDebug ) {
-        ualog("Printing saved options");
-        ualog("Storage set: disabled: " + document.querySelector("#disabled").checked);
-        //ualog("Storage set: user agents: " + document.querySelector("#ua-textarea").value);
-        ualog("Storage set: should freq: " + document.querySelector("#chng-freq-chk").checked);
-        ualog("Storage set: freq interval: " + document.querySelector("#chng-freq-time").value);
-        //ualog("Storage set: same device: " + document.querySelector("#same-device").checked);
-        ualog("Storage set: same os: " + document.querySelector("#same-os").checked);
-        ualog("Storage set: same browser: " + document.querySelector("#same-browser").checked);
-        ualog("End");
-    }
+    ualog("Printing saved options");
+    ualog("Storage set: disabled: " + document.querySelector("#disabled").checked);
+    //ualog("Storage set: user agents: " + document.querySelector("#ua-textarea").value);
+    ualog("Storage set: should freq: " + document.querySelector("#chng-freq-chk").checked);
+    ualog("Storage set: freq interval: " + document.querySelector("#chng-freq-time").value);
+    //ualog("Storage set: same device: " + document.querySelector("#same-device").checked);
+    ualog("Storage set: same os: " + document.querySelector("#same-os").checked);
+    ualog("Storage set: same browser: " + document.querySelector("#same-browser").checked);
+    ualog("End");
 }
 
 function saveOptions(e) {
+    var shouldChangeFreq, changeFreqTime;
+    
     e.preventDefault();
+
+    shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
+
     browser.storage.local.set({
         disabled: document.querySelector("#disabled").checked,
         //user_agents: document.querySelector("#ua-textarea").value,
-        should_change_freq: document.querySelector("#chng-freq-chk").checked,
-        change_freq_time: document.querySelector("#chng-freq-time").value,
+        should_change_freq: shouldChangeFreq,
         //should_only_use_same_device: document.querySelector("#same-device").checked,
         should_only_use_same_os: document.querySelector("#same-os").checked,
         should_only_use_same_browser: document.querySelector("#same-browser").checked
-    }).then(printSavedOptions, onError);
+    }).catch(onError);
+
+    changeFreqTime = document.querySelector("#chng-freq-time").value;
+    if ( changeFreqTime <= 0 || changeFreqTime > 60 )
+        changeFreqTime = defaultChangeFreq;
+
+    browser.storage.local.set({
+        change_freq_time: changeFreqtime
+    }).then(function () {
+        if ( bgpage.shouldDebug )
+            printSavedOptions;
+    }, onError);
 }
 
 function restoreOptions() {

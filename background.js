@@ -108,6 +108,20 @@ function setAvailableUAs() {
         }, onError);
 }
 
+function removePeriodicChange() {
+    browser.alarms.clear("ua-change-alarm");
+}
+
+function initPeriodicChange() {
+    browser.local.storage.get(["should_change_freq", "change_freq_time"]).then((res) => {
+        if ( res.should_change_freq ) {
+            browser.alarms.create("ua-change-alarm", {
+                res.change_freq_time
+            });
+        }
+    }, onError);
+}
+
 function getNewUA() {
     if ( availableUAs.length < 2 ) {
         currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
@@ -131,6 +145,7 @@ var isDisabled;
 getDisabled();
 setAvailableUAs();
 getNewUA();
+initPeriodicChange();
 
 browser.webRequest.onBeforeSendHeaders.addListener(
   rewriteUserAgentHeader,

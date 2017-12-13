@@ -8,6 +8,7 @@
     "webRequest",
     "webRequestBlocking",
     "storage",
+    "alarms",
     "<all_urls>"
   ],
 
