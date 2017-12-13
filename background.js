@@ -75,6 +75,7 @@ function getRandomInt(min, max) {
 }
 
 function excludeOtherOSes() {
+    //ualog("excluding OSes");
     if ( navigator.oscpu.includes("Mac") ) {
 
         userAgents.forEach(function (item, index, array) {
@@ -107,7 +108,7 @@ function excludeOtherBrowsers() {
 
 function setAvailableUAs() {
     browser.storage.local.get([
-        "should_only_use_same_device",
+        //"should_only_use_same_device",
         "should_only_use_same_os",
         "should_only_use_same_browser"]).then((res) => {
 
@@ -117,10 +118,14 @@ function setAvailableUAs() {
                 excludeOtherOSes();
             }
             if ( res.should_only_use_same_browser ) {
-                exlcludeOtherBrowsers();
+                excludeOtherBrowsers();
             }
+
+            onlySameOS = res.should_only_use_same_os;
+            onlySameBrowser = res.should_only_use_same_browser;
             getNewUA();
-        }, onError);
+
+    }, onError);
 }
 
 function removePeriodicChange() {
@@ -149,7 +154,7 @@ function initPeriodicChange() {
 function getNewUA() {
     if ( availableUAs.length < 2 ) {
         currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
-        ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
+        //ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
     } else
         currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
 }
@@ -159,6 +164,8 @@ var currentUA;
 var availableUAs = [];
 var isDisabled;
 var isPeriodicAlarmActive;
+var onlySameOS;
+var onlySameBrowser;
 const baEnabledIconPath = "icons/PhantomGreen.png";
 const baDisabledIconPath = "icons/PhantomRed.png";
 

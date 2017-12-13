@@ -21,36 +21,50 @@ function printSavedOptions() {
 }
 
 function saveOptions(e) {
-    var shouldChangeFreq, changeFreqTime;
+    var shouldDisable, shouldChangeFreq, changeFreqTime, shouldSameOS, shouldSameBrowser;
     
     e.preventDefault();
 
+    shouldDisable = document.querySelector("#disabled").checked;
     shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
+    shouldSameOS = document.querySelector("#same-os").checked;
+    shouldSameBrowser = document.querySelector("#same-browser").checked;
 
+    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
+    if ( Number.isNaN(changeFreqTime) ||
+        changeFreqTime < changeFreqTimeMin ||
+        changeFreqTime > changeFreqTimeMax
+    ) changeFreqTime = defaultChangeFreq;
+
+    // Updating storage
     browser.storage.local.set({
-        disabled: document.querySelector("#disabled").checked,
-        //user_agents: document.querySelector("#ua-textarea").value,
+        disabled: shouldDisable,
         should_change_freq: shouldChangeFreq,
+        change_freq_time: changeFreqTime,
         //should_only_use_same_device: document.querySelector("#same-device").checked,
-        should_only_use_same_os: document.querySelector("#same-os").checked,
-        should_only_use_same_browser: document.querySelector("#same-browser").checked
-    }).catch(onError);
+        should_only_use_same_os: shouldSameOS,
+        should_only_use_same_browser: shouldSameBrowser
+    }).then(function () {
+        if ( bgpage.shouldDebug )
+            printSavedOptions;
+    }, onError);
 
+    // Check isDisabled change
+    if ( shouldDisable != bgpage.isDisabled ) {
+        bgpage.isDisabled = shouldDisable;
+        bgpage.updateBrowserActionIcon();
+    }
+
+    // Check should periodicallly change UA
     if ( !shouldChangeFreq )
         bgpage.removePeriodicChange();
     else if ( !bgpage.isPeriodicAlarmActive )
         bgpage.initPeriodicChange();
 
-    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
-    if ( Number.isNaN(changeFreqTime) || changeFreqTime < changeFreqTimeMin || changeFreqTime > changeFreqTimeMax )
-        changeFreqTime = defaultChangeFreq;
-
-    browser.storage.local.set({
-        change_freq_time: changeFreqTime
-    }).then(function () {
-        if ( bgpage.shouldDebug )
-            printSavedOptions;
-    }, onError);
+    // Check available
+    if ( shouldSameOS != bgpage.onlySameOS ||
+        shouldSameBrowser != bgpage.onlySameBrowser
+    ) bgpage.setAvailableUAs();
 }
 
 function restoreOptions() {
