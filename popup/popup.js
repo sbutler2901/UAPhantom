@@ -16,7 +16,7 @@ function openSettings() {
 function updateIsDisabledUI(isDisabled) {
     var isDisabledString = "Spoofing!";
     var disabledNotifier = document.querySelector("#isdisabled-notifier");
-
+    
     if ( isDisabled ) {
         isDisabledString = "Disabled";
 
@@ -43,13 +43,20 @@ function updateIsDisabledUI(isDisabled) {
     disabledNotifier.innerText = isDisabledString;
 }
 
+function updateUAElement() {
+    }
+
 // tmp ua
 const bgpage = browser.extension.getBackgroundPage();
 
 document.addEventListener("DOMContentLoaded", function () { 
-    document.querySelector("#new-ua-btn").addEventListener("click", bgpage.getNewUA);
+    document.querySelector("#new-ua-btn").addEventListener("click", function () {
+        bgpage.getNewUA();
+        document.querySelector("#current-ua").innerText = bgpage.currentUA; 
+    });
     document.querySelector("#settings-btn").addEventListener("click", function () {
         browser.runtime.openOptionsPage();
     });
     updateIsDisabledUI(bgpage.isDisabled);
+    document.querySelector("#current-ua").innerText = bgpage.currentUA;
 });

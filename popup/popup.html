@@ -5,7 +5,7 @@
         <meta charset="utf-8">
     <style>
         body {
-            width: 120px;
+            width: 150px;
             background-color: #464646;
             color: white;
         }
@@ -15,17 +15,24 @@
             text-align: center;
         }
         p#title {
-            font-size: 18px;
+            font-size: 20px;
             margin-top: 15px;
             margin-bottom: 0px;
         }
+        p#current-ua {
+            padding: 0px 5px;
+            /*height: 100px;*/
+        }
         p.disabled {
-            color: red;
+            color: #fb1111;
         }
         p.enabled {
-            color: rgb(142,255,79);
+            color: #20e81b;
         }
-        button {
+        #action-btns {
+            margin: 5px 10px;
+        }
+        #action-btns button {
             display: block;
             margin: auto;
             font-family: verdana;
@@ -36,11 +43,11 @@
             padding: 5px 0px 5px 5px;
             font-size: 12px;
         }
-        button:hover {
+        #action-btns button:hover {
             background-color: #1e1e1e;
             color: white;
         }
-        img {
+        #action-btns img {
             height: 15px;
             width: 15px;
             float: left;
@@ -52,15 +59,12 @@
     <body>
         <p id="title">Phantom</p>
         <p id="isdisabled-notifier"></p>
-        <div>
+        <p id="current-ua"></p>
+        <div id="action-btns">
             <img id="disable-img" src='../icons/disable.png' alt="status">
             <button id="disable-btn" type="button">Disable</button>
-        </div>
-        <div>
             <img src='../icons/add.png' alt="add">
             <button id="new-ua-btn" type="button">New UA</button>
-        </div>
-        <div>
             <img src='../icons/gear.png' alt="settings">
             <button id="settings-btn" type="button">Settings</button>
         </div>
