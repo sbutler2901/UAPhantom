@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+    <style>
+        body {
+            width: 120px;
+            background-color: #464646;
+            color: white;
+        }
+        p {
+            color: white;
+            font-family: helvetica;
+            text-align: center;
+        }
+        p#title {
+            font-size: 18px;
+            margin-top: 15px;
+            margin-bottom: 0px;
+        }
+        p.disabled {
+            color: red;
+        }
+        p.enabled {
+            color: rgb(142,255,79);
+        }
+        button {
+            display: block;
+            margin: auto;
+            font-family: verdana;
+            border: none;
+            width: 100px;
+            background-color: #464646;
+            color: white;
+            padding: 5px 0px 5px 5px;
+            font-size: 12px;
+        }
+        button:hover {
+            background-color: #1e1e1e;
+            color: white;
+        }
+        img {
+            height: 15px;
+            width: 15px;
+            float: left;
+            margin-top: 5px;
+            margin-left: 2px;
+        }
+    </style>
+    </head>
+    <body>
+        <p id="title">Phantom</p>
+        <p id="isdisabled-notifier"></p>
+        <div>
+            <img id="disable-img" src='../icons/disable.png' alt="status">
+            <button id="disable-btn" type="button">Disable</button>
+        </div>
+        <div>
+            <img src='../icons/add.png' alt="add">
+            <button id="new-ua-btn" type="button">New UA</button>
+        </div>
+        <div>
+            <img src='../icons/gear.png' alt="settings">
+            <button id="settings-btn" type="button">Settings</button>
+        </div>
+        <script src="popup.js"></script>
+    </body>
+</html>
