@@ -6,7 +6,7 @@
 
         <style>
             body {
-            	background-color: #464646;
+            	background-color: #262424;
             	color: white;
             }
             label {
@@ -29,9 +29,13 @@
             }
             img{
                 position: absolute;
-                width: 100%;
+                width: auto;
+                height: auto;
+                max-height: 100%;
+                max-width: 100%;
                 opacity: 0.1;
                 top: 0;
+                z-index: -1;
             }
         </style>
     </head>
@@ -65,11 +69,8 @@
                     <input id="same-browser" type="checkbox" name="same_browser"/>
                     Only use same browser (Firefox, Chrome, Opera, etc.)
                 </label>
-
-            </div>
             <button type="submit">Save</button>
         </form>
-
         <script src="options.js"></script>
     </body>
 </html>
