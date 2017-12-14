@@ -1,146 +1,103 @@
 'use strict';
 
-function ualog(content) {
-    console.log("UASpoofer: " + content);
-}
 
-function onError(error) {
-    ualog('Error: ${error}');
-}
-
-function printSavedOptions() {
-    ualog("Printing saved options");
-    ualog("Storage set: disabled: " + document.querySelector("#disabled").checked);
-    //ualog("Storage set: user agents: " + document.querySelector("#ua-textarea").value);
-    ualog("Storage set: should freq: " + document.querySelector("#chng-freq-chk").checked);
-    ualog("Storage set: freq interval: " + document.querySelector("#chng-freq-time").value);
-    //ualog("Storage set: same device: " + document.querySelector("#same-device").checked);
-    ualog("Storage set: same os: " + document.querySelector("#same-os").checked);
-    ualog("Storage set: same browser: " + document.querySelector("#same-browser").checked);
-    ualog("End");
-}
-
-function saveOptions(e) {
-    var shouldChangeFreq, changeFreqTime;
-    
-    e.preventDefault();
-
-    shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
-
-    browser.storage.local.set({
-        disabled: document.querySelector("#disabled").checked,
-        //user_agents: document.querySelector("#ua-textarea").value,
-        should_change_freq: shouldChangeFreq,
-        //should_only_use_same_device: document.querySelector("#same-device").checked,
-        should_only_use_same_os: document.querySelector("#same-os").checked,
-        should_only_use_same_browser: document.querySelector("#same-browser").checked
-    }).catch(onError);
-
-    if ( !shouldChangeFreq )
-        bgpage.removePeriodicChange();
-    else if ( !bgpage.isPeriodicAlarmActive )
-        bgpage.initPeriodicChange();
-
-    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
-    if ( Number.isNaN(changeFreqTime) || changeFreqTime < changeFreqTimeMin || changeFreqTime > changeFreqTimeMax )
-        changeFreqTime = defaultChangeFreq;
-
-    browser.storage.local.set({
-        change_freq_time: changeFreqTime
-    }).then(function () {
-        if ( bgpage.shouldDebug )
-            printSavedOptions;
-    }, onError);
-}
-
-function restoreOptions() {
-
-    browser.storage.local.get("disabled").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: disabled: " + res.disabled);
-
-        if ( res.disabled === undefined )
-            document.querySelector("#disabled").checked = defaultIsDisabled;
-        else
-            document.querySelector("#disabled").checked = res.disabled;
-    }, onError);
-
-    /*browser.storage.local.get("user_agents").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: user agents: " + res.user_agents);
-
-        if ( res.user_agents === undefined ) {
-            document.querySelector("#ua-textarea").value = defaultUserAgents;
-        } else {
-            document.querySelector("#ua-textarea").value = res.user_agents;
-        }
-    }, onError);*/
-
-    browser.storage.local.get("should_change_freq").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: should freq: " + res.should_change_freq);
-
-        if ( res.should_change_freq === undefined )
-            document.querySelector("#chng-freq-chk").checked = defaultShouldChangeFreq;
-        else
-            document.querySelector("#chng-freq-chk").checked = res.should_change_freq;
-    }, onError);
-
-    browser.storage.local.get("change_freq_time").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: freq interval: " + res.change_freq_time);
-
-        if ( res.change_freq_time === undefined )
-            document.querySelector("#chng-freq-time").value = defaultChangeFreq;
-        else
-            document.querySelector("#chng-freq-time").value = res.change_freq_time;
-    }, onError);
-
-    /*browser.storage.local.get("should_only_use_same_device").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: same device: " + res.should_only_use_same_device);
-
-        if ( res.should_only_use_same_device === undefined )
-            document.querySelector("#same-device").checked = defaultShouldUseSameDevice;
-        else
-            document.querySelector("#same-device").checked = res.should_only_use_same_device;
-    }, onError);*/
-
-    browser.storage.local.get("should_only_use_same_os").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: same os: " + res.should_only_use_same_os);
-
-        if ( res.should_only_use_same_os === undefined )
-            document.querySelector("#same-os").checked = defaultShouldUseSameOS;
-        else
-            document.querySelector("#same-os").checked = res.should_only_use_same_os;
-    }, onError);
-
-    browser.storage.local.get("should_only_use_same_browser").then((res) => {
-        if ( bgpage.shouldDebug )
-            ualog("Storage Get: same browser: " + res.should_only_use_same_browser);
-
-        if ( res.should_only_use_same_browser === undefined )
-            document.querySelector("#same-browser").checked = defaultShouldUseSameBrowser;
-        else
-            document.querySelector("#same-browser").checked = res.should_only_use_same_browser;
-    }, onError);
-
-    document.querySelector("#current-ua").innerText = bgpage.currentUA;
-}
+//********************* Local variables *********************
 
 const bgpage = browser.extension.getBackgroundPage();
 
-const defaultIsDisabled = false;
-const defaultShouldChangeFreq = false;
-const changeFreqTimeMin = 1;
-const changeFreqTimeMax = 60;
-const defaultChangeFreq = 30;
-//const defaultShouldUseSameDevice = true;
-const defaultShouldUseSameOS = false;
-const defaultShouldUseSameBrowser = false;
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
-document.querySelector("form").addEventListener("submit", saveOptions);
+//********************* Init *********************
 
+init();
+
+
+//********************* Function Declarations *********************
+
+// Initializes the page
+function init() {
+    document.addEventListener("DOMContentLoaded", restoreOptions);
+    document.querySelector("form").addEventListener("submit", saveOptions);
+}
+
+// Saves user's options on submit
+function saveOptions(e) {
+    var shouldDisable, shouldChangeFreq, changeFreqTime, shouldSameOS, shouldSameBrowser;
+    
+    e.preventDefault();
+
+    shouldDisable = document.querySelector("#disabled").checked;
+    shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
+    shouldSameOS = document.querySelector("#same-os").checked;
+    shouldSameBrowser = document.querySelector("#same-browser").checked;
+
+    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
+    if ( Number.isNaN(changeFreqTime) ||
+        changeFreqTime < bgpage.changeFreqTimeMin ||
+        changeFreqTime > bgpage.changeFreqTimeMax
+    ) changeFreqTime = bgpage.defaultChangeFreq;
+
+    // Updating storage
+    browser.storage.local.set({
+        should_change_freq: shouldChangeFreq,
+        change_freq_time: changeFreqTime,
+        should_only_use_same_os: shouldSameOS,
+        should_only_use_same_browser: shouldSameBrowser
+    }).then(function () {
+
+        // Check isDisabled change
+        if ( shouldDisable != bgpage.isDisabled ) {
+            if ( shouldDisable )
+                bgpage.disable();
+            else
+                bgpage.enable();
+        }
+
+        // Only run parser and update UAs if settings have changed
+        if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
+            bgpage.setAvailableUAs();
+
+    }, bgpage.onError);
+
+}
+
+// Restore's user's options on page load
+function restoreOptions() {
+
+    browser.storage.local.get(["disabled", "should_change_freq",
+        "change_freq_time", "should_only_use_same_os",
+        "should_only_use_same_browser"]).then((res) => {
+
+        var isDisabled = bgpage.defaultIsDisabled;
+        var shouldChange = bgpage.defaultShouldChange;
+        var shouldChangeFreq = bgpage.defaultChangeFreq;
+        var shouldSameOS = bgpage.defaultShouldSameOS;
+        var shouldSameBrowser = bgpage.defaultShouldSameBrowser;
+
+        // Handle storage in inconsistent state. Possibly due to
+        // browser storage being disabled
+        if ( res.disabled !== undefined )
+            isDisabled = res.disabled;
+
+        if ( res.should_change_freq !== undefined )
+            shouldChange = res.should_change_freq;
+
+        if ( res.change_freq_time !== undefined )
+            shouldChangeFreq = res.change_freq_time;
+
+        if ( res.should_only_use_same_os !== undefined )
+            shouldSameOS  = res.should_only_use_same_os;
+
+        if ( res.should_only_use_same_browser !== undefined )
+            shouldSameBrowser = res.should_only_use_same_browser;
+
+        document.querySelector("#disabled").checked = isDisabled;
+        document.querySelector("#chng-freq-chk").checked = shouldChange;
+        document.querySelector("#chng-freq-time").value = shouldChangeFreq;
+        document.querySelector("#same-os").checked = shouldSameOS;
+        document.querySelector("#same-browser").checked = shouldSameBrowser;
+
+    }, bgpage.onError);
+
+    document.querySelector("#current-ua").innerText = bgpage.currentUA;
+}
 

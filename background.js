@@ -1,11 +1,41 @@
 'use strict';
 
-function ualog(content) {
-  console.log("UASpoofer: " + content);
-}
 
-function onError(error) {
-  ualog('Error: ${error}');
+//********************* Global variables *********************
+
+var shouldDebug = false;
+var isDisabled;
+
+var defaultIsDisabled = false;
+var defaultShouldChange = true;
+var defaultChangeFreq = 30;
+var defaultShouldSameOS = false;
+var defaultShouldSameBrowser = false;
+var changeFreqTimeMin = 1;
+var changeFreqTimeMax = 60;
+
+const baEnabledIconPath = "icons/PhantomGreen.png";
+const baDisabledIconPath = "icons/PhantomRed.png";
+
+
+//********************* Init *********************
+
+init();
+
+
+//********************* Function Declarations *********************
+
+function init() {
+    checkStorageState();
+    initDisabled();
+    setAvailableUAs();
+    initPeriodicChange();
+
+    browser.webRequest.onBeforeSendHeaders.addListener(
+      rewriteUserAgentHeader,
+      {urls: ["<all_urls>"]},
+      ["blocking", "requestHeaders"]
+    );
 }
 
 function rewriteUserAgentHeader(e) {
@@ -19,11 +49,70 @@ function rewriteUserAgentHeader(e) {
     return {requestHeaders: e.requestHeaders};
 }
 
+
+//********** Extension State **********
+
+// Used to ensure that the local storage is in a usable initial state
+function checkStorageState() {
+    browser.storage.local.get(["disabled", "should_change_freq",
+        "change_freq_time", "should_only_use_same_os",
+        "should_only_use_same_browser"]).then((res) => {
+
+        if ( res.disabled === undefined )
+            browser.storage.local.set({
+                disabled: defaultIsDisabled
+            }).catch(onError);
+
+        if ( res.should_change_freq === undefined )
+            browser.storage.local.set({
+                should_change_freq: defaultShouldChange
+            }).catch(onError);
+
+        if ( res.change_freq_time === undefined )
+            browser.storage.local.set({
+                change_freq_time: defaultChangeFreq
+            }).catch(onError);
+
+        if ( res.should_only_use_same_os === undefined )
+            browser.storage.local.set({
+                should_only_use_same_os: defaultShouldSameOS
+            }).catch(onError);
+
+        if ( res.should_only_use_same_browser === undefined )
+            browser.storage.local.set({
+                should_only_use_same_browser: defaultShouldSameBrowser
+            }).catch(onError);
+    });
+}
+
+// Gets whether spoofing is enabled or disable and sets global value
+function initDisabled() {
+    browser.storage.local.get("disabled").then((res) => {
+        if ( res.disabled === undefined )
+            isDisabled = defaultIsDisabled;
+        else
+            isDisabled = res.disabled;
+
+        setExtensionState();
+    });
+}
+
+// Updates the extensions icon in the browser's toolbar based on extension state
 function updateBrowserActionIcon() {
     if ( isDisabled )
         browser.browserAction.setIcon({path: baDisabledIconPath});
     else
         browser.browserAction.setIcon({path: baEnabledIconPath});
+}
+
+// Sets necessary extension attributes based on current state
+function setExtensionState() {
+    if ( isDisabled )
+        removePeriodicChange();
+    else
+        initPeriodicChange();
+
+    updateBrowserActionIcon();
 }
 
 // Enables spoofing and passes isDisabled (true) to callback
@@ -33,7 +122,7 @@ function disable(callback) {
     }).then(() => {
 
         isDisabled = true;
-        updateBrowserActionIcon();
+        setExtensionState();
 
         if ( callback !== undefined )
             callback(isDisabled);
@@ -48,7 +137,7 @@ function enable(callback) {
     }).then(() => {
 
         isDisabled = false;
-        updateBrowserActionIcon();
+        setExtensionState();
 
         if ( callback !== undefined )
             callback(isDisabled);
@@ -56,118 +145,46 @@ function enable(callback) {
     }, onError);
 }
 
-// Gets whether spoofing is enabled or disable and sets global value
-function getDisabled() {
-    browser.storage.local.get("disabled").then((res) => {
-        isDisabled = res.disabled;
-        if ( isDisabled ) 
-            browser.browserAction.setIcon({path: baDisabledIconPath});
-        else
-            browser.browserAction.setIcon({path: baEnabledIconPath});
-    });
-}
 
-//The maximum is exclusive and the minimum is inclusive
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
+//********** Perodic UA change / alarms **********
 
-function excludeOtherOSes() {
-    if ( navigator.oscpu.includes("Mac") ) {
-
-        userAgents.forEach(function (item, index, array) {
-            if ( item.includes("Macintosh") )
-                availableUAs.push(item);
-        });
-
-    } else if ( naviagtor.oscpu.includes("Win") ) {
-
-        userAgents.forEach(function (item, index, array) {
-            if ( item.includes("Windows") )
-                availableUAs.push(item);
-        });
-
-    } else if ( navigator.oscpu.includes("Linux") ) {
-
-        userAgents.forEach(function (item, index, array) {
-            if ( item.includes("Linux") )
-                availableUAs.push(item);
-        });
-
-    } else {
-        ualog("Unknown OS. Ignoring Setting");
+// Starts the extensions alarm for periodically changing UA
+function initPeriodicChange() {
+    if ( !isDisabled ) {
+        browser.storage.local.get(["should_change_freq", "change_freq_time"]).then((res) => {
+            if ( res.should_change_freq ) {
+                browser.alarms.create("ua-change-alarm", {
+                    periodInMinutes: res.change_freq_time
+                });
+                browser.alarms.onAlarm.addListener(handleAlarms);
+            }
+        }, onError);
     }
 }
 
-function excludeOtherBrowsers() {
-
-}
-
-function setAvailableUAs() {
-    browser.storage.local.get([
-        "should_only_use_same_device",
-        "should_only_use_same_os",
-        "should_only_use_same_browser"]).then((res) => {
-
-            /*if ( res.should_only_use_same_device ) {
-            }*/
-            if ( res.should_only_use_same_os ) {
-                excludeOtherOSes();
-            }
-            if ( res.should_only_use_same_browser ) {
-                exlcludeOtherBrowsers();
-            }
-            getNewUA();
-        }, onError);
-}
-
+// Removes any alarms and corresponding listeners set by extension
 function removePeriodicChange() {
     //browser.alarms.clear("ua-change-alarm");
     browser.alarms.clearAll();
-    browser.alarms.onAlarm.removeListener(handleUAChangeAlarm);
+
+    // Listener receives any alarm
+    browser.alarms.onAlarm.removeListener(handleAlarms);
 }
 
-function handleUAChangeAlarm(alarmInfo) {
-    getNewUA();
+// Handles an alarm being fired by browser
+function handleAlarms(alarmInfo) {
+    if ( alarmInfo.name == "ua-change-alarm" )
+        getNewUA();
 }
 
-function initPeriodicChange() {
-    browser.storage.local.get(["should_change_freq", "change_freq_time"]).then((res) => {
-        if ( res.should_change_freq ) {
-            browser.alarms.create("ua-change-alarm", {
-                periodInMinutes: res.change_freq_time
-            });
-            browser.alarms.onAlarm.addListener(handleUAChangeAlarm);
-        }
-        isPeriodicAlarmActive = res.should_change_freq;
 
-    }, onError);
+//********** Error / Debugging **********
+
+function ualog(content) {
+  console.log("UASpoofer: " + content);
 }
 
-function getNewUA() {
-    if ( availableUAs.length < 2 ) {
-        currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
-        ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
-    } else
-        currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
+function onError(error) {
+  ualog('Error: ${error}');
 }
 
-var shouldDebug = false;
-var currentUA;
-var availableUAs = [];
-var isDisabled;
-var isPeriodicAlarmActive;
-const baEnabledIconPath = "icons/PhantomGreen.png";
-const baDisabledIconPath = "icons/PhantomRed.png";
-
-getDisabled();
-setAvailableUAs();
-initPeriodicChange();
-
-browser.webRequest.onBeforeSendHeaders.addListener(
-  rewriteUserAgentHeader,
-  {urls: ["<all_urls>"]},
-  ["blocking", "requestHeaders"]
-);

@@ -1,7 +1,7 @@
 {
   "description": "A user agent spoofer",
   "manifest_version": 2,
-  "name": "UASpoofer",
+  "name": "UAPhantom",
   "version": "0.2.0",
 
   "permissions": [
@@ -13,7 +13,7 @@
   ],
 
   "background": {
-    "scripts": ["userAgents.js", "background.js"]
+    "scripts": ["helpers/userAgents.js", "background.js"]
   },
 
   "options_ui": {

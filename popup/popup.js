@@ -1,22 +1,38 @@
+'use strict';
 
-function ualog(content) {
-    console.log("UASpoofer: " + content);
+
+//********************* Local variables *********************
+
+const bgpage = browser.extension.getBackgroundPage();
+
+
+//********************* Init *********************
+
+init();
+
+
+//********************* Function Declarations *********************
+
+// Initializes the page
+function init() {
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("#new-ua-btn").addEventListener("click", function () {
+            bgpage.getNewUA();
+            document.querySelector("#current-ua").innerText = bgpage.currentUA;
+        });
+        document.querySelector("#settings-btn").addEventListener("click", function () {
+            browser.runtime.openOptionsPage();
+        });
+        updateIsDisabledUI(bgpage.isDisabled);
+        document.querySelector("#current-ua").innerText = bgpage.currentUA;
+    });
 }
 
-function onError(error) {
-    ualog('Error: ${error}');
-}
-
-// Opens the extensions settings
-function openSettings() {
-    browser.runtime.openOptionsPage();
-}
-
-// Updates the html affected when spoofing is enabled / disabled
+// Updates the page elements affected when spoofing is enabled / disabled
 function updateIsDisabledUI(isDisabled) {
     var isDisabledString = "Spoofing!";
     var disabledNotifier = document.querySelector("#isdisabled-notifier");
-
+    
     if ( isDisabled ) {
         isDisabledString = "Disabled";
 
@@ -25,8 +41,8 @@ function updateIsDisabledUI(isDisabled) {
         document.querySelector("#disable-btn").innerText = "Enable";
         document.querySelector("#disable-img").src = "../icons/disable.png";
         document.querySelector("#disable-btn").addEventListener("click", function enabling() {
-            bgpage.enable(updateIsDisabledUI);
             this.removeEventListener("click", enabling);
+            bgpage.enable(updateIsDisabledUI);
         });
 
     } else {
@@ -35,21 +51,10 @@ function updateIsDisabledUI(isDisabled) {
         document.querySelector("#disable-btn").innerText = "Disable";
         document.querySelector("#disable-img").src = "../icons/enable.png";
         document.querySelector("#disable-btn").addEventListener("click", function disabling() {
-            bgpage.disable(updateIsDisabledUI);
             this.removeEventListener("click", disabling);
+            bgpage.disable(updateIsDisabledUI);
         });
     }
 
     disabledNotifier.innerText = isDisabledString;
 }
-
-// tmp ua
-const bgpage = browser.extension.getBackgroundPage();
-
-document.addEventListener("DOMContentLoaded", function () { 
-    document.querySelector("#new-ua-btn").addEventListener("click", bgpage.getNewUA);
-    document.querySelector("#settings-btn").addEventListener("click", function () {
-        browser.runtime.openOptionsPage();
-    });
-    updateIsDisabledUI(bgpage.isDisabled);
-});
