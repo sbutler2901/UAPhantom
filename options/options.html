@@ -30,28 +30,26 @@
         </style>
     </head>
     <body>
-        <h2>Settings:</h2>
-        <p><span>Current UA: </span><span id="current-ua"></span></p>
+        <h2>UAPhantom Settings:</h2>
+        <p>
+            <span>Current UA: </span>
+            <span id="current-ua"></span>
+        </p>
         <form action="submit">
             <label>
                 <input id="disabled" type="checkbox" name="disabled"/>
                 Disable Spoofing?
             </label>
-
-            <label>User Agents: <br/>
-                <textarea id="ua-textarea" name="user_agents"></textarea>
-            </label>
             <label>
                 <input id="chng-freq-chk" type="checkbox" name="change_freq"/>
                 Change periodically?
             </label>
-            <label id="chng-freq">Change every <input id="chng-freq-time" type="text" name="change_freq"/>mins</label>
+            <label id="chng-freq">Change every 
+                <input id="chng-freq-time" type="text" name="change_freq"/>
+                mins
+            </label>
             <h4>Filters:</h4>
             <div>
-                <!--<label>
-                    <input id="same-device" type="checkbox" name="same_device"/>
-                    Only use same device (desktop, tablet, phone, etc.)
-                </label>-->
                 <label>
                     <input id="same-os" type="checkbox" name="same_os"/>
                     Only use same OS (Linux, macOS, Windows, etc.)

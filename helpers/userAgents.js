@@ -1,29 +1,28 @@
 'use strict';
 
+
+//********************* Global variables *********************
+
 var currentUA;
 var availableUAs = [];
+var defaultUserAgents;
+const minAvailableUAs = 5;
 var onlySameOS;
 var onlySameBrowser;
-const minAvailableUAs = 5;
+
+
+//********************* Function Declarations *********************
 
 // Gets a new user agent to be provided by extension when spoofing
 function getNewUA() {
-    if ( availableUAs.length < minAvailableUAs ) {
-        currentUA = userAgents[ getRandomInt(0, userAgents.length) ];
-        //ualog("Number of UA's inadequate for expected privacy. Ignoring filters!");
-    } else
-        currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
+    currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
 }
 
 // Defines the available UAs to be used by the extension based on the user's preferences
 function setAvailableUAs() {
     browser.storage.local.get([
-        //"should_only_use_same_device",
         "should_only_use_same_os",
         "should_only_use_same_browser"]).then((res) => {
-
-            /*if ( res.should_only_use_same_device ) {
-            }*/
 
             if ( res.should_only_use_same_os ) {
                 excludeOtherOSes();
@@ -31,6 +30,8 @@ function setAvailableUAs() {
             if ( res.should_only_use_same_browser ) {
                 excludeOtherBrowsers();
             }
+            if ( availableUAs.length < minAvailableUAs )
+                availableUAs = defaultUserAgents;
 
             onlySameOS = res.should_only_use_same_os;
             onlySameBrowser = res.should_only_use_same_browser;
@@ -41,24 +42,23 @@ function setAvailableUAs() {
 
 // Excludes All OSes that are not the same as the User's
 function excludeOtherOSes() {
-    //ualog("excluding OSes");
     if ( navigator.oscpu.includes("Mac") ) {
 
-        userAgents.forEach(function (item, index, array) {
+        defaultUserAgents.forEach(function (item, index, array) {
             if ( item.includes("Macintosh") )
                 availableUAs.push(item);
         });
 
     } else if ( naviagtor.oscpu.includes("Win") ) {
 
-        userAgents.forEach(function (item, index, array) {
+        defaultUserAgents.forEach(function (item, index, array) {
             if ( item.includes("Windows") )
                 availableUAs.push(item);
         });
 
     } else if ( navigator.oscpu.includes("Linux") ) {
 
-        userAgents.forEach(function (item, index, array) {
+        defaultUserAgents.forEach(function (item, index, array) {
             if ( item.includes("Linux") )
                 availableUAs.push(item);
         });
@@ -70,7 +70,7 @@ function excludeOtherOSes() {
 
 // Excludes all browsers that are not the same as the User's
 function excludeOtherBrowsers() {
-
+    //TODO
 }
 
 //The maximum is exclusive and the minimum is inclusive
@@ -81,7 +81,7 @@ function getRandomInt(min, max) {
 }
 
 // This provides hardcoded user agents that the extension will always have available
-var userAgents = [
+defaultUserAgents = [
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
   "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0",

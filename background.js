@@ -1,11 +1,41 @@
 'use strict';
 
-function ualog(content) {
-  console.log("UASpoofer: " + content);
-}
 
-function onError(error) {
-  ualog('Error: ${error}');
+//********************* Global variables *********************
+
+var shouldDebug = false;
+var isDisabled;
+
+var defaultIsDisabled = false;
+var defaultShouldChange = true;
+var defaultChangeFreq = 30;
+var defaultShouldSameOS = false;
+var defaultShouldSameBrowser = false;
+var changeFreqTimeMin = 1;
+var changeFreqTimeMax = 60;
+
+const baEnabledIconPath = "icons/PhantomGreen.png";
+const baDisabledIconPath = "icons/PhantomRed.png";
+
+
+//********************* Init *********************
+
+init();
+
+
+//********************* Function Declarations *********************
+
+function init() {
+    checkStorageState();
+    initDisabled();
+    setAvailableUAs();
+    initPeriodicChange();
+
+    browser.webRequest.onBeforeSendHeaders.addListener(
+      rewriteUserAgentHeader,
+      {urls: ["<all_urls>"]},
+      ["blocking", "requestHeaders"]
+    );
 }
 
 function rewriteUserAgentHeader(e) {
@@ -19,11 +49,70 @@ function rewriteUserAgentHeader(e) {
     return {requestHeaders: e.requestHeaders};
 }
 
+
+//********** Extension State **********
+
+// Used to ensure that the local storage is in a usable initial state
+function checkStorageState() {
+    browser.storage.local.get(["disabled", "should_change_freq",
+        "change_freq_time", "should_only_use_same_os",
+        "should_only_use_same_browser"]).then((res) => {
+
+        if ( res.disabled === undefined )
+            browser.storage.local.set({
+                disabled: defaultIsDisabled
+            }).catch(onError);
+
+        if ( res.should_change_freq === undefined )
+            browser.storage.local.set({
+                should_change_freq: defaultShouldChange
+            }).catch(onError);
+
+        if ( res.change_freq_time === undefined )
+            browser.storage.local.set({
+                change_freq_time: defaultChangeFreq
+            }).catch(onError);
+
+        if ( res.should_only_use_same_os === undefined )
+            browser.storage.local.set({
+                should_only_use_same_os: defaultShouldSameOS
+            }).catch(onError);
+
+        if ( res.should_only_use_same_browser === undefined )
+            browser.storage.local.set({
+                should_only_use_same_browser: defaultShouldSameBrowser
+            }).catch(onError);
+    });
+}
+
+// Gets whether spoofing is enabled or disable and sets global value
+function initDisabled() {
+    browser.storage.local.get("disabled").then((res) => {
+        if ( res.disabled === undefined )
+            isDisabled = defaultIsDisabled;
+        else
+            isDisabled = res.disabled;
+
+        setExtensionState();
+    });
+}
+
+// Updates the extensions icon in the browser's toolbar based on extension state
 function updateBrowserActionIcon() {
     if ( isDisabled )
         browser.browserAction.setIcon({path: baDisabledIconPath});
     else
         browser.browserAction.setIcon({path: baEnabledIconPath});
+}
+
+// Sets necessary extension attributes based on current state
+function setExtensionState() {
+    if ( isDisabled )
+        removePeriodicChange();
+    else
+        initPeriodicChange();
+
+    updateBrowserActionIcon();
 }
 
 // Enables spoofing and passes isDisabled (true) to callback
@@ -33,8 +122,7 @@ function disable(callback) {
     }).then(() => {
 
         isDisabled = true;
-        updateBrowserActionIcon();
-        removePeriodicChange();
+        setExtensionState();
 
         if ( callback !== undefined )
             callback(isDisabled);
@@ -49,8 +137,7 @@ function enable(callback) {
     }).then(() => {
 
         isDisabled = false;
-        updateBrowserActionIcon();
-        initPeriodicChange();
+        setExtensionState();
 
         if ( callback !== undefined )
             callback(isDisabled);
@@ -58,30 +145,10 @@ function enable(callback) {
     }, onError);
 }
 
-// Gets whether spoofing is enabled or disable and sets global value
-function getDisabled() {
-    browser.storage.local.get("disabled").then((res) => {
-        isDisabled = res.disabled;
-        if ( isDisabled ) 
-            browser.browserAction.setIcon({path: baDisabledIconPath});
-        else
-            browser.browserAction.setIcon({path: baEnabledIconPath});
-    });
-}
 
-function removePeriodicChange() {
-    //browser.alarms.clear("ua-change-alarm");
-    browser.alarms.clearAll();
+//********** Perodic UA change / alarms **********
 
-    // Listener receives any alarm
-    browser.alarms.onAlarm.removeListener(handleAlarms);
-}
-
-function handleAlarms(alarmInfo) {
-    if ( alarmInfo.name == "ua-change-alarm" )
-        getNewUA();
-}
-
+// Starts the extensions alarm for periodically changing UA
 function initPeriodicChange() {
     if ( !isDisabled ) {
         browser.storage.local.get(["should_change_freq", "change_freq_time"]).then((res) => {
@@ -95,18 +162,29 @@ function initPeriodicChange() {
     }
 }
 
-// Global variables to be used throughout extension
-var shouldDebug = false;
-var isDisabled;
-const baEnabledIconPath = "icons/PhantomGreen.png";
-const baDisabledIconPath = "icons/PhantomRed.png";
+// Removes any alarms and corresponding listeners set by extension
+function removePeriodicChange() {
+    //browser.alarms.clear("ua-change-alarm");
+    browser.alarms.clearAll();
 
-getDisabled();
-setAvailableUAs();
-initPeriodicChange();
+    // Listener receives any alarm
+    browser.alarms.onAlarm.removeListener(handleAlarms);
+}
 
-browser.webRequest.onBeforeSendHeaders.addListener(
-  rewriteUserAgentHeader,
-  {urls: ["<all_urls>"]},
-  ["blocking", "requestHeaders"]
-);
+// Handles an alarm being fired by browser
+function handleAlarms(alarmInfo) {
+    if ( alarmInfo.name == "ua-change-alarm" )
+        getNewUA();
+}
+
+
+//********** Error / Debugging **********
+
+function ualog(content) {
+  console.log("UASpoofer: " + content);
+}
+
+function onError(error) {
+  ualog('Error: ${error}');
+}
+
