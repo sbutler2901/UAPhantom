@@ -2,7 +2,7 @@
   "description": "A user agent spoofer",
   "manifest_version": 2,
   "name": "UAPhantom",
-  "version": "0.2.0",
+  "version": "0.2.1",
 
   "permissions": [
     "webRequest",
@@ -16,6 +16,11 @@
     "scripts": ["helpers/userAgents.js", "background.js"]
   },
 
+  "icons": {
+    "48": "icons/PhantomPurple-48.png",
+    "96": "icons/PhantomPurple-96.png"
+  },
+
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true,
@@ -25,8 +30,8 @@
   "browser_action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "icons/PhantomRed.png",
-      "32": "icons/PhantomRed.png"
+      "16": "icons/PhantomGreen-96.png",
+      "32": "icons/PhantomGreen-96.png"
     },
     "browser_style": true
   }

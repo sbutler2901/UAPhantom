@@ -14,8 +14,8 @@ var defaultShouldSameBrowser = false;
 var changeFreqTimeMin = 1;
 var changeFreqTimeMax = 60;
 
-const baEnabledIconPath = "icons/PhantomGreen.png";
-const baDisabledIconPath = "icons/PhantomRed.png";
+const baEnabledIconPath = "icons/PhantomGreen-96.png";
+const baDisabledIconPath = "icons/PhantomRed-96.png";
 
 
 //********************* Init *********************
