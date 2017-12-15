@@ -5,6 +5,19 @@
 
 const bgpage = browser.extension.getBackgroundPage();
 
+// storage keys
+var skeyDisabled = "disabled";
+var skeyShouldChange = "should_change";
+var skeyChangeFreq = "change_freq";
+var skeyOSLinux = "os_filter_linux";
+var skeyOSMac = "os_filter_mac";
+var skeyOSWin = "os_filter_win";
+var skeyBrowserFF = "browser_filter_ff";
+var skeyBrowserChr = "browser_filter_chrome";
+var skeyBrowserSaf = "browser_filter_safari";
+var skeyBrowserOp = "browser_filter_opera";
+var skeyBrowserEdg = "browser_filter_edge";
+var skeyBrowserIE = "browser_filter_ie";
 
 //********************* Init *********************
 
@@ -21,16 +34,23 @@ function init() {
 
 // Saves user's options on submit
 function saveOptions(e) {
-    var shouldDisable, shouldChangeFreq, changeFreqTime, shouldSameOS, shouldSameBrowser;
-    
     e.preventDefault();
 
-    shouldDisable = document.querySelector("#disabled").checked;
-    shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
-    shouldSameOS = document.querySelector("#same-os").checked;
-    shouldSameBrowser = document.querySelector("#same-browser").checked;
+    var shouldDisable = document.querySelector("#disabled").checked;
+    var shouldChangeFreq = document.querySelector("#chng-freq-chk").checked;
+    var changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
 
-    changeFreqTime = Number.parseInt(document.querySelector("#chng-freq-time").value, 10);
+    var shouldOSLinux = document.querySelector("#os-linux").checked;
+    var shouldOSMac = document.querySelector("#os-mac").checked;
+    var shouldOSWin = document.querySelector("#os-win").checked;
+
+    var shouldBrowserFF = document.querySelector("#browser-ff").checked;
+    var shouldBrowserChr = document.querySelector("#browser-chrome").checked;
+    var shouldBrowserSaf = document.querySelector("#browser-safari").checked;
+    var shouldBrowserOp = document.querySelector("#browser-opera").checked;
+    var shouldBrowserEdg = document.querySelector("#browser-edge").checked;
+    var shouldBrowserIe = document.querySelector("#browser-ie").checked;
+    
     if ( Number.isNaN(changeFreqTime) ||
         changeFreqTime < bgpage.changeFreqTimeMin ||
         changeFreqTime > bgpage.changeFreqTimeMax
@@ -38,10 +58,17 @@ function saveOptions(e) {
 
     // Updating storage
     browser.storage.local.set({
-        should_change_freq: shouldChangeFreq,
-        change_freq_time: changeFreqTime,
-        should_only_use_same_os: shouldSameOS,
-        should_only_use_same_browser: shouldSameBrowser
+        skeyShouldChange: shouldChangeFreq,
+        skeyChangeFreq: changeFreqTime,
+        skeyOSLinux: shouldOSLinux,
+        skeyOSMac: shouldOSMac,
+        skeyOSWin: shouldOSWin,
+        skeyBrowserFF: shouldBrowserFF,
+        skeyBrowserChr: shouldBrowserChr,
+        skeyBrowserSaf: shouldBrowserSaf,
+        skeyBrowserOp: shouldBrowserOp,
+        skeyBrowserEdg: shouldBrowserEdg,
+        skeyBrowserIE: shouldBrowserIe
     }).then(function () {
 
         // Check isDisabled change
@@ -53,7 +80,7 @@ function saveOptions(e) {
         }
 
         // Only run parser and update UAs if settings have changed
-        if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
+        //if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
             bgpage.setAvailableUAs();
 
     }, bgpage.onError);
@@ -62,42 +89,25 @@ function saveOptions(e) {
 
 // Restore's user's options on page load
 function restoreOptions() {
-
-    browser.storage.local.get(["disabled", "should_change_freq",
-        "change_freq_time", "should_only_use_same_os",
-        "should_only_use_same_browser"]).then((res) => {
-
-        var isDisabled = bgpage.defaultIsDisabled;
-        var shouldChange = bgpage.defaultShouldChange;
-        var shouldChangeFreq = bgpage.defaultChangeFreq;
-        var shouldSameOS = bgpage.defaultShouldSameOS;
-        var shouldSameBrowser = bgpage.defaultShouldSameBrowser;
-
-        // Handle storage in inconsistent state. Possibly due to
-        // browser storage being disabled
-        if ( res.disabled !== undefined )
-            isDisabled = res.disabled;
-
-        if ( res.should_change_freq !== undefined )
-            shouldChange = res.should_change_freq;
-
-        if ( res.change_freq_time !== undefined )
-            shouldChangeFreq = res.change_freq_time;
-
-        if ( res.should_only_use_same_os !== undefined )
-            shouldSameOS  = res.should_only_use_same_os;
-
-        if ( res.should_only_use_same_browser !== undefined )
-            shouldSameBrowser = res.should_only_use_same_browser;
-
-        document.querySelector("#disabled").checked = isDisabled;
-        document.querySelector("#chng-freq-chk").checked = shouldChange;
-        document.querySelector("#chng-freq-time").value = shouldChangeFreq;
-        document.querySelector("#same-os").checked = shouldSameOS;
-        document.querySelector("#same-browser").checked = shouldSameBrowser;
-
-    }, bgpage.onError);
-
+    
     document.querySelector("#current-ua").innerText = bgpage.currentUA;
-}
 
+    browser.storage.local.get().then((res) => {
+        
+        document.querySelector("#disabled").checked = res[skeyDisabled];
+        document.querySelector("#chng-freq-chk").checked = res[skeyShouldChange];
+        document.querySelector("#chng-freq-time").value = res[skeyChangeFreq];
+    
+        document.querySelector("#os-linux").checked = res[skeyOSLinux];
+        document.querySelector("#os-mac").checked = res[skeyOSMac];
+        document.querySelector("#os-win").checked = res[skeyOSWin];
+
+        document.querySelector("#browser-ff").checked = res[skeyBrowserFF];
+        document.querySelector("#browser-chrome").checked = res[skeyBrowserChr];
+        document.querySelector("#browser-safari").checked = res[skeyBrowserSaf];
+        document.querySelector("#browser-opera").checked = res[skeyBrowserOp];
+        document.querySelector("#browser-edge").checked = res[skeyBrowserEdg];
+        document.querySelector("#browser-ie").checked = res[skeyBrowserIE];
+ 
+    }, bgpage.onError);
+}
