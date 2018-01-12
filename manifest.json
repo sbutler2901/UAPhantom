@@ -1,8 +1,14 @@
 {
-  "description": "A user agent spoofer",
+  "description": "A simple user agent spoofer",
   "manifest_version": 2,
   "name": "UAPhantom",
   "version": "0.2.1",
+
+  "applications": {
+    "gecko": {
+      "id": "sbutler@sbsoftware.me"
+    }
+  },
 
   "permissions": [
     "webRequest",
