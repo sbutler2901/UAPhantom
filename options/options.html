@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta charset="utf-8">
-
         <style>
             body {
-            	background-color: #464646;
+            	background-color: #262424;
             	color: white;
+            }
+            #title {
+                width: 300px;
+                border-bottom: 2px solid white
             }
             label {
                 display: block;
                 margin: 15px;
             }
-            /*form {
-                width: 75%;
-            }*/
             #chng-freq {
                 margin-left: 75px;
+            }
+            #filters-title {
+                width: 100px;
+                border-bottom: 1px solid white;
             }
             button {
                 margin-top: 25px;
@@ -27,10 +30,23 @@
                 margin-left: 50px;
                 width: 90%;
             }
+            img{
+                position: absolute;
+                margin: auto;
+                width: auto;
+                height: auto;
+                max-height: 100%;
+                max-width: 100%;
+                opacity: 0.1;
+                top: 0; left: 0; bottom: 0; right: 0;
+                z-index: -1;
+
+            }
         </style>
     </head>
     <body>
-        <h2>UAPhantom Settings:</h2>
+        <h2 id="title">UAPhantom Settings:</h2>
+        <img src="../icons/PhantomPurple.png" alt="PurplePhantom">
         <p>
             <span>Current UA: </span>
             <span id="current-ua"></span>
@@ -48,21 +64,54 @@
                 <input id="chng-freq-time" type="text" name="change_freq"/>
                 mins
             </label>
-            <h4>Filters:</h4>
+            <h3 id="filters-title">Filters:</h3>
             <div>
-                <label>
-                    <input id="same-os" type="checkbox" name="same_os"/>
-                    Only use same OS (Linux, macOS, Windows, etc.)
-                </label>
-                <label>
-                    <input id="same-browser" type="checkbox" name="same_browser"/>
-                    Only use same browser (Firefox, Chrome, Opera, etc.)
-                </label>
+                <div>
+                    <h4>OS:</h4>
+                    <label>
+                        <input id="os-linux" type="checkbox"/>
+                        Linux
+                    </label>
+                    <label>
+                        <input id="os-mac" type="checkbox"/>
+                        macOS
+                    </label>
+                    <label>
+                        <input id="os-win" type="checkbox"/>
+                        Windows
+                    </label>
+                </div>
+                <div style="display:none;">
+                    <h3>Browsers:</h3>
+                    <label>
+                        <input id="browser-ff" type="checkbox"/>
+                        Firefox
+                    </label>
+                    <label>
+                        <input id="browser-chrome" type="checkbox"/>
+                        Chrome
+                    </label>
+                    <label>
+                        <input id="browser-safari" type="checkbox"/>
+                        Safari
+                    </label>
+                    <label>
+                        <input id="browser-opera" type="checkbox"/>
+                        Opera
+                    </label>
+                    <label>
+                        <input id="browser-edge" type="checkbox"/>
+                        Edge
+                    </label>
+                    <label>
+                        <input id="browser-ie" type="checkbox"/>
+                        Internet Explorer
+                    </label>
 
+                </div>
             </div>
             <button type="submit">Save</button>
         </form>
-
         <script src="options.js"></script>
     </body>
 </html>

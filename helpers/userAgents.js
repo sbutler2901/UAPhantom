@@ -18,11 +18,20 @@ function getNewUA() {
     currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
 }
 
+//TODO:
+    /*var skeyOSLinux = "os_filter_linux";
+var skeyOSMac = "os_filter_mac";
+var skeyOSWin = "os_filter_win";
+var skeyBrowserFF = "browser_filter_ff";
+var skeyBrowserChr = "browser_filter_chrome";
+var skeyBrowserSaf = "browser_filter_safari";
+var skeyBrowserOp = "browser_filter_opera";
+var skeyBrowserEdg = "browser_filter_edge";
+var skeyBrowserIE = "browser_filter_ie";*/
+
 // Defines the available UAs to be used by the extension based on the user's preferences
 function setAvailableUAs() {
-    browser.storage.local.get([
-        "should_only_use_same_os",
-        "should_only_use_same_browser"]).then((res) => {
+    browser.storage.local.get().then((res) => {
 
             if ( res.should_only_use_same_os ) {
                 excludeOtherOSes();

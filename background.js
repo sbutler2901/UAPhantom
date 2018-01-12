@@ -3,20 +3,32 @@
 
 //********************* Global variables *********************
 
-var shouldDebug = false;
 var isDisabled;
 
 var defaultIsDisabled = false;
 var defaultShouldChange = true;
 var defaultChangeFreq = 30;
-var defaultShouldSameOS = false;
-var defaultShouldSameBrowser = false;
+var defaultOS = true;
+var defaultBrowser = true;
 var changeFreqTimeMin = 1;
 var changeFreqTimeMax = 60;
 
-const baEnabledIconPath = "icons/PhantomGreen.png";
-const baDisabledIconPath = "icons/PhantomRed.png";
+const baEnabledIconPath = "icons/PhantomGreen-96.png";
+const baDisabledIconPath = "icons/PhantomRed-96.png";
 
+// storage keys
+var skeyDisabled = "disabled";
+var skeyShouldChange = "should_change";
+var skeyChangeFreq = "change_freq";
+var skeyOSLinux = "os_filter_linux";
+var skeyOSMac = "os_filter_mac";
+var skeyOSWin = "os_filter_win";
+var skeyBrowserFF = "browser_filter_ff";
+var skeyBrowserChr = "browser_filter_chrome";
+var skeyBrowserSaf = "browser_filter_safari";
+var skeyBrowserOp = "browser_filter_opera";
+var skeyBrowserEdg = "browser_filter_edge";
+var skeyBrowserIE = "browser_filter_ie";
 
 //********************* Init *********************
 
@@ -52,46 +64,13 @@ function rewriteUserAgentHeader(e) {
 
 //********** Extension State **********
 
-// Used to ensure that the local storage is in a usable initial state
-function checkStorageState() {
-    browser.storage.local.get(["disabled", "should_change_freq",
-        "change_freq_time", "should_only_use_same_os",
-        "should_only_use_same_browser"]).then((res) => {
-
-        if ( res.disabled === undefined )
-            browser.storage.local.set({
-                disabled: defaultIsDisabled
-            }).catch(onError);
-
-        if ( res.should_change_freq === undefined )
-            browser.storage.local.set({
-                should_change_freq: defaultShouldChange
-            }).catch(onError);
-
-        if ( res.change_freq_time === undefined )
-            browser.storage.local.set({
-                change_freq_time: defaultChangeFreq
-            }).catch(onError);
-
-        if ( res.should_only_use_same_os === undefined )
-            browser.storage.local.set({
-                should_only_use_same_os: defaultShouldSameOS
-            }).catch(onError);
-
-        if ( res.should_only_use_same_browser === undefined )
-            browser.storage.local.set({
-                should_only_use_same_browser: defaultShouldSameBrowser
-            }).catch(onError);
-    });
-}
-
 // Gets whether spoofing is enabled or disable and sets global value
 function initDisabled() {
-    browser.storage.local.get("disabled").then((res) => {
-        if ( res.disabled === undefined )
+    browser.storage.local.get(skeyDisabled).then((res) => {
+        if ( res[skeyDisabled] === undefined )
             isDisabled = defaultIsDisabled;
         else
-            isDisabled = res.disabled;
+            isDisabled = res[skeyDisabled];
 
         setExtensionState();
     });
@@ -118,7 +97,7 @@ function setExtensionState() {
 // Enables spoofing and passes isDisabled (true) to callback
 function disable(callback) {
     browser.storage.local.set({
-        disabled: true
+        skeyDisabled: true
     }).then(() => {
 
         isDisabled = true;
@@ -133,7 +112,7 @@ function disable(callback) {
 // Enables spoofing and passes isDisabled (false) to callback
 function enable(callback) {
     browser.storage.local.set({
-        disabled: false
+        skeyDisabled: false
     }).then(() => {
 
         isDisabled = false;
@@ -145,16 +124,82 @@ function enable(callback) {
     }, onError);
 }
 
+// Used to ensure that the local storage is in a usable initial state
+function checkStorageState() {
+    browser.storage.local.get().then((res) => {
+
+        if ( res[skeyDisabled] === undefined )
+            browser.storage.local.set({
+                skeyDisabled: defaultIsDisabled
+            }).catch(onError);
+
+        if ( res[skeyShouldChange] === undefined )
+            browser.storage.local.set({
+                skeyShouldChange: defaultShouldChange
+            }).catch(onError);
+
+        if ( res[skeyChangeFreq] === undefined )
+            browser.storage.local.set({
+                skeyChangeFreq: defaultChangeFreq
+            }).catch(onError);
+
+        if ( res[skeyOSLinux] === undefined )
+            browser.storage.local.set({
+                skeyOSLinux: defaultOS
+            }).catch(onError);
+
+        if ( res[skeyOSMac] === undefined )
+            browser.storage.local.set({
+                skeyOSMac: defaultOS
+            }).catch(onError);
+
+        if ( res[skeyOSWin] === undefined )
+            browser.storage.local.set({
+                skeyOSWin: defaultOS
+            }).catch(onError);
+
+        if ( res[skeyBrowserFF] === undefined )
+            browser.storage.local.set({
+                skeyBrowserFF: defaultBrowser
+            }).catch(onError);
+
+        if ( res[skeyBrowserChr] === undefined )
+            browser.storage.local.set({
+                skeyBrowserChr: defaultBrowser
+            }).catch(onError);
+        
+        if ( res[skeyBrowserSaf] === undefined )
+            browser.storage.local.set({
+                skeyBrowserSaf: defaultBrowser
+            }).catch(onError);
+    
+        if ( res[skeyBrowserOp] === undefined )
+            browser.storage.local.set({
+                skeyBrowserSaf: defaultBrowser
+            }).catch(onError);
+
+        if ( res[skeyBrowserEdg] === undefined )
+            browser.storage.local.set({
+                skeyBrowserEdg: defaultBrowser
+            }).catch(onError);
+       
+        if ( res[skeyBrowserIE] === undefined )
+            browser.storage.local.set({
+                skeyBrowserEdg: defaultBrowser
+            }).catch(onError);
+    });
+}
+
 
 //********** Perodic UA change / alarms **********
 
 // Starts the extensions alarm for periodically changing UA
 function initPeriodicChange() {
     if ( !isDisabled ) {
-        browser.storage.local.get(["should_change_freq", "change_freq_time"]).then((res) => {
-            if ( res.should_change_freq ) {
+        browser.storage.local.get([skeyShouldChange, skeyChangeFreq]).then((res) => {
+            if ( res[skeyShouldChange] ) {
                 browser.alarms.create("ua-change-alarm", {
-                    periodInMinutes: res.change_freq_time
+                    periodInMinutes: res[skeyChangeFreq]
                 });
                 browser.alarms.onAlarm.addListener(handleAlarms);
             }
