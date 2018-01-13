@@ -2,7 +2,7 @@
   "description": "A simple user agent spoofer",
   "manifest_version": 2,
   "name": "UAPhantom",
-  "version": "0.2.1",
+  "version": "0.3.0",
 
   "applications": {
     "gecko": {
@@ -19,7 +19,12 @@
   ],
 
   "background": {
-    "scripts": ["helpers/userAgents.js", "background.js"]
+    "scripts": [
+      "globals.js",
+      "helpers/defaultUserAgents.js", 
+      "helpers/userAgents.js", 
+      "main.js"
+    ]
   },
 
   "icons": {

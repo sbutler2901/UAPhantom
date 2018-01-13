@@ -1,39 +1,8 @@
 'use strict';
 
-
-//********************* Global variables *********************
-
-var isDisabled;
-
-var defaultIsDisabled = false;
-var defaultShouldChange = true;
-var defaultChangeFreq = 30;
-var defaultOS = true;
-var defaultBrowser = true;
-var changeFreqTimeMin = 1;
-var changeFreqTimeMax = 60;
-
-const baEnabledIconPath = "icons/PhantomGreen-96.png";
-const baDisabledIconPath = "icons/PhantomRed-96.png";
-
-// storage keys
-var skeyDisabled = "disabled";
-var skeyShouldChange = "should_change";
-var skeyChangeFreq = "change_freq";
-var skeyOSLinux = "os_filter_linux";
-var skeyOSMac = "os_filter_mac";
-var skeyOSWin = "os_filter_win";
-var skeyBrowserFF = "browser_filter_ff";
-var skeyBrowserChr = "browser_filter_chrome";
-var skeyBrowserSaf = "browser_filter_safari";
-var skeyBrowserOp = "browser_filter_opera";
-var skeyBrowserEdg = "browser_filter_edge";
-var skeyBrowserIE = "browser_filter_ie";
-
 //********************* Init *********************
 
 init();
-
 
 //********************* Function Declarations *********************
 

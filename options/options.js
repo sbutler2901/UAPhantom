@@ -84,8 +84,7 @@ function saveOptions(e) {
             else
                 bgpage.enable();
         }
-        // Only run parser and update UAs if settings have changed
-        //if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
+        //TODO:  Only run parser and update UAs if settings have changed
         bgpage.setAvailableUAs();
         savePopup();
     }, bgpage.onError);
