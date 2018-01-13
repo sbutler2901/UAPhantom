@@ -40,9 +40,21 @@ var skeyBrowserOp = "browser_filter_opera";
 var skeyBrowserEdg = "browser_filter_edge";
 var skeyBrowserIE = "browser_filter_ie";
 
+//TODO: implement storage for chromium
+var skeyBrowserChrium = "browser_filter_chromium";
+
 // User Agent OS Strings
 var macUAString = "Mac OS";
 var winUAString = "Windows";
 var linUAString = "Linux";
 var ubuUAString = "Ubuntu";
 var fedUAString = "Fedora";
+
+// User Agent Browser Strings
+var ffUAString = "Firefox";
+var chrmiumUAString = "Chromium";
+var chromeUAString = "Chrome";
+var safUAString = "Safari";
+var ieUAString = "IE";
+var edgeUAString = "Edge";
+var oprUAString = "Opera";
