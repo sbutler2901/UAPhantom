@@ -9,8 +9,12 @@ var intermediateBrowserUAs = [];
 
 // Gets a new user agent to be provided by extension when spoofing
 function getNewUA() {
-    if ( availableUAs.length < minAvailableUAs )
-        addAllDefaults(availableUAs);
+    if ( availableUAs.length < minAvailableUAs ) {
+        availableUAs = [];
+        defaultUAs.forEach( function (item) {
+            availableUAs.push(item.ua);
+        });
+    }
 
     currentUA = availableUAs[ getRandomInt(0, availableUAs.length) ];
 }
@@ -44,21 +48,20 @@ function setAvailableUAs() {
     });
 }
 
-// Makes all default user agents available for usage
-function addAllDefaults(uaArray) {
-    uaArray = [];
-    defaultUAs.forEach( function (item) {
-        uaArray.push(item.ua);
-    });
-}
-
 // Excludes OS's not selected by the user
 function excludeOSes(includeLinux, includeMac, includeWin) {
+
+    var defaultToInterOS = function() {
+        intermediateOSUAs = [];
+        defaultUAs.forEach( function (item) {
+            intermediateOSUAs.push(item);
+        });
+    }
+
     if ( includeLinux && includeMac && includeWin ) {
-        addAllDefaults(intermediateOSUAs);
+        defaultToInterOS();
     } else if ( !includeLinux && !includeMac && !includeWin ) {
-        // If all browsers have been deselected
-        addAllDefaults(intermediateOSUAs);
+        defaultToInterOS();
     } else {
         defaultUAs.forEach( function (item, index) {
             if ( includeMac && item.os.name === macUAString ) {
