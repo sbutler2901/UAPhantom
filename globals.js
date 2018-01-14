@@ -35,13 +35,11 @@ var skeyOSMac = "os_filter_mac";
 var skeyOSWin = "os_filter_win";
 var skeyBrowserFF = "browser_filter_ff";
 var skeyBrowserChr = "browser_filter_chrome";
+var skeyBrowserChrmium = "browser_filter_chromium";
 var skeyBrowserSaf = "browser_filter_safari";
 var skeyBrowserOp = "browser_filter_opera";
 var skeyBrowserEdg = "browser_filter_edge";
 var skeyBrowserIE = "browser_filter_ie";
-
-//TODO: implement storage for chromium
-var skeyBrowserChrium = "browser_filter_chromium";
 
 // User Agent OS Strings
 var macUAString = "Mac OS";

@@ -38,6 +38,7 @@ function saveOptions(e) {
 
     var shouldBrowserFF = document.querySelector("#browser-ff").checked;
     var shouldBrowserChr = document.querySelector("#browser-chrome").checked;
+    var shouldBrowserChrmium = document.querySelector("#browser-chromium").checked;
     var shouldBrowserSaf = document.querySelector("#browser-safari").checked;
     var shouldBrowserOp = document.querySelector("#browser-opera").checked;
     var shouldBrowserEdg = document.querySelector("#browser-edge").checked;
@@ -58,6 +59,7 @@ function saveOptions(e) {
         "os_filter_win": shouldOSWin,
         "browser_filter_ff": shouldBrowserFF,
         "browser_filter_chrome": shouldBrowserChr,
+        "browser_filter_chromium": shouldBrowserChrmium,
         "browser_filter_safari": shouldBrowserSaf,
         "browser_filter_opera": shouldBrowserOp,
         "browser_filter_edge": shouldBrowserEdg,
@@ -99,6 +101,7 @@ function restoreOptions() {
 
         document.querySelector("#browser-ff").checked = res[bgpage.skeyBrowserFF];
         document.querySelector("#browser-chrome").checked = res[bgpage.skeyBrowserChr];
+        document.querySelector("#browser-chromium").checked = res[bgpage.skeyBrowserChrmium];
         document.querySelector("#browser-safari").checked = res[bgpage.skeyBrowserSaf];
         document.querySelector("#browser-opera").checked = res[bgpage.skeyBrowserOp];
         document.querySelector("#browser-edge").checked = res[bgpage.skeyBrowserEdg];

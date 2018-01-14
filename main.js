@@ -96,66 +96,72 @@ function enable(callback) {
 
 // Used to ensure that the local storage is in a usable initial state
 function checkStorageState() {
+    // Note: keys must be strings (string variables aren't allowed)
     browser.storage.local.get().then((res) => {
 
         if ( res[skeyDisabled] === undefined )
             browser.storage.local.set({
-                skeyDisabled: defaultIsDisabled
+                "disabled": defaultIsDisabled
             }).catch(onError);
 
         if ( res[skeyShouldChange] === undefined )
             browser.storage.local.set({
-                skeyShouldChange: defaultShouldChange
+                "should_change": defaultShouldChange
             }).catch(onError);
 
         if ( res[skeyChangeFreq] === undefined )
             browser.storage.local.set({
-                skeyChangeFreq: defaultChangeFreq
+                "change_freq": defaultChangeFreq
             }).catch(onError);
 
         if ( res[skeyOSLinux] === undefined )
             browser.storage.local.set({
-                skeyOSLinux: defaultOS
+                "os_filter_linux": defaultOS
             }).catch(onError);
 
         if ( res[skeyOSMac] === undefined )
             browser.storage.local.set({
-                skeyOSMac: defaultOS
+                "os_filter_mac": defaultOS
             }).catch(onError);
 
         if ( res[skeyOSWin] === undefined )
             browser.storage.local.set({
-                skeyOSWin: defaultOS
+                "os_filter_win": defaultOS
             }).catch(onError);
 
         if ( res[skeyBrowserFF] === undefined )
             browser.storage.local.set({
-                skeyBrowserFF: defaultBrowser
+                "browser_filter_ff": defaultBrowser
             }).catch(onError);
 
         if ( res[skeyBrowserChr] === undefined )
             browser.storage.local.set({
-                skeyBrowserChr: defaultBrowser
+                "browser_filter_chrome": defaultBrowser
             }).catch(onError);
-        
+
+        if ( res[skeyBrowserChrmium] === undefined )
+            browser.storage.local.set({
+                "browser_filter_chromium": defaultBrowser
+            }).catch(onError);
+       
         if ( res[skeyBrowserSaf] === undefined )
             browser.storage.local.set({
-                skeyBrowserSaf: defaultBrowser
+                "browser_filter_safari": defaultBrowser
             }).catch(onError);
     
         if ( res[skeyBrowserOp] === undefined )
             browser.storage.local.set({
-                skeyBrowserSaf: defaultBrowser
+                "browser_filter_opera": defaultBrowser
             }).catch(onError);
 
         if ( res[skeyBrowserEdg] === undefined )
             browser.storage.local.set({
-                skeyBrowserEdg: defaultBrowser
+                "browser_filter_edge": defaultBrowser
             }).catch(onError);
        
         if ( res[skeyBrowserIE] === undefined )
             browser.storage.local.set({
-                skeyBrowserEdg: defaultBrowser
+                "browser_filter_ie": defaultBrowser
             }).catch(onError);
     });
 }
