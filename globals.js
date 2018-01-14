@@ -50,9 +50,9 @@ var fedUAString = "Fedora";
 
 // User Agent Browser Strings
 var ffUAString = "Firefox";
-var chrmiumUAString = "Chromium";
 var chromeUAString = "Chrome";
+var chrmiumUAString = "Chromium";
 var safUAString = "Safari";
-var ieUAString = "IE";
-var edgeUAString = "Edge";
 var oprUAString = "Opera";
+var edgeUAString = "Edge";
+var ieUAString = "IE";

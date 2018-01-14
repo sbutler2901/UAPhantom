@@ -28,14 +28,19 @@ function setAvailableUAs() {
 
     browser.storage.local.get().then((res) => {
 
+        /*defaultUAs.forEach( function (item, index) {
+            console.log(item.browser.name);
+        });*/
+
         excludeOSes(res[skeyOSLinux], res[skeyOSMac], res[skeyOSWin]);
 
-        //excludeBrowsers();
+        excludeBrowsers(res[skeyBrowserFF], res[skeyBrowserChr], res[skeyBrowserChrmium],
+            res[skeyBrowserSaf], res[skeyBrowserOp], res[skeyBrowserEdg],
+            res[skeyBrowserIE]);
 
-        //TODO: This needs changing when browser exclusion implemented
-        intermediateOSUAs.forEach( function (item, index) {
+        /*intermediateBrowserUAs.forEach( function (item, index) {
             availableUAs.push(item.ua); 
-        });
+        });*/
 
         getNewUA();
 
@@ -80,8 +85,52 @@ function excludeOSes(includeLinux, includeMac, includeWin) {
 }
 
 // Excludes all browsers that are not the same as the User's
-function excludeBrowsers() {
-    //TODO
+function excludeBrowsers(includeFF, includeChr, includeChrmium,
+                        includeSaf, includeOp, includeEdg, includeIE) {
+
+    var interOStoInterBrowser = function() {
+        availableUAs = [];
+        intermediateOSUAs.forEach( function (item) {
+            availableUAs.push(item.ua);
+        });
+    }
+
+    if ( includeFF && includeChr && includeChrmium && 
+        includeSaf && includeOp && includeEdg && includeIE) {
+
+        interOStoInterBrowser();
+
+    } else if ( !includeFF && !includeChr && !includeChrmium && 
+        !includeSaf && !includeOp && !includeEdg && !includeIE) {
+
+        interOStoInterBrowser();
+
+    } else {
+        intermediateOSUAs.forEach( function (item, index) {
+            
+            if ( includeFF && item.browser.name === ffUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeChr && item.browser.name === chromeUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeChrmium && item.browser.name === chrmiumUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeSaf && item.browser.name === safUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeOp && item.browser.name === oprUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeEdg && item.browser.name === edgeUAString ) {
+                availableUAs.push(item.ua);
+            }
+            if ( includeIE && item.browser.name === ieUAString ) {
+                availableUAs.push(item.ua);
+            }
+        });
+    }
 }
 
 //The maximum is exclusive and the minimum is inclusive
