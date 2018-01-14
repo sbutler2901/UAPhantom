@@ -12,4 +12,5 @@ Developing:
 
 ## Notes
 User agents retrieved from [techblog.willshouse.com]( https://techblog.willshouse.com/2012/01/03/most-common-user-agents/)
+
 User agent filtering provided by utilizing: [ua-parser-js](https://www.npmjs.com/package/ua-parser-js)
