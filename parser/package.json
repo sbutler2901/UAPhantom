@@ -1,0 +1,16 @@
+{
+  "name": "uaphantom-parser",
+  "version": "0.1.5",
+  "description": "Retrieves user agents using HTTPS and produces the JS file containing user agents that are used by UAPhantom.",
+  "main": "parser.js",
+  "dependencies": {
+    "htmlparser": "^1.7.7",
+    "ua-parser-js": "^0.7.17"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

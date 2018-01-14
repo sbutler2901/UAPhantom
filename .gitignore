@@ -1,3 +1,4 @@
-TODO.txt
-userAgentsOrig.txt
 .DS_Store
+node_modules
+*.zip
+useragents.html

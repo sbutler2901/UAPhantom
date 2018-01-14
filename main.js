@@ -1,35 +1,5 @@
 'use strict';
 
-
-//********************* Global variables *********************
-
-var isDisabled;
-
-var defaultIsDisabled = false;
-var defaultShouldChange = true;
-var defaultChangeFreq = 30;
-var defaultOS = true;
-var defaultBrowser = true;
-var changeFreqTimeMin = 1;
-var changeFreqTimeMax = 60;
-
-const baEnabledIconPath = "icons/PhantomGreen-96.png";
-const baDisabledIconPath = "icons/PhantomRed-96.png";
-
-// storage keys
-var skeyDisabled = "disabled";
-var skeyShouldChange = "should_change";
-var skeyChangeFreq = "change_freq";
-var skeyOSLinux = "os_filter_linux";
-var skeyOSMac = "os_filter_mac";
-var skeyOSWin = "os_filter_win";
-var skeyBrowserFF = "browser_filter_ff";
-var skeyBrowserChr = "browser_filter_chrome";
-var skeyBrowserSaf = "browser_filter_safari";
-var skeyBrowserOp = "browser_filter_opera";
-var skeyBrowserEdg = "browser_filter_edge";
-var skeyBrowserIE = "browser_filter_ie";
-
 //********************* Init *********************
 
 init();
@@ -126,66 +96,72 @@ function enable(callback) {
 
 // Used to ensure that the local storage is in a usable initial state
 function checkStorageState() {
+    // Note: keys must be strings (string variables aren't allowed)
     browser.storage.local.get().then((res) => {
 
         if ( res[skeyDisabled] === undefined )
             browser.storage.local.set({
-                skeyDisabled: defaultIsDisabled
+                "disabled": defaultIsDisabled
             }).catch(onError);
 
         if ( res[skeyShouldChange] === undefined )
             browser.storage.local.set({
-                skeyShouldChange: defaultShouldChange
+                "should_change": defaultShouldChange
             }).catch(onError);
 
         if ( res[skeyChangeFreq] === undefined )
             browser.storage.local.set({
-                skeyChangeFreq: defaultChangeFreq
+                "change_freq": defaultChangeFreq
             }).catch(onError);
 
         if ( res[skeyOSLinux] === undefined )
             browser.storage.local.set({
-                skeyOSLinux: defaultOS
+                "os_filter_linux": defaultOS
             }).catch(onError);
 
         if ( res[skeyOSMac] === undefined )
             browser.storage.local.set({
-                skeyOSMac: defaultOS
+                "os_filter_mac": defaultOS
             }).catch(onError);
 
         if ( res[skeyOSWin] === undefined )
             browser.storage.local.set({
-                skeyOSWin: defaultOS
+                "os_filter_win": defaultOS
             }).catch(onError);
 
         if ( res[skeyBrowserFF] === undefined )
             browser.storage.local.set({
-                skeyBrowserFF: defaultBrowser
+                "browser_filter_ff": defaultBrowser
             }).catch(onError);
 
         if ( res[skeyBrowserChr] === undefined )
             browser.storage.local.set({
-                skeyBrowserChr: defaultBrowser
+                "browser_filter_chrome": defaultBrowser
             }).catch(onError);
-        
+
+        if ( res[skeyBrowserChrmium] === undefined )
+            browser.storage.local.set({
+                "browser_filter_chromium": defaultBrowser
+            }).catch(onError);
+       
         if ( res[skeyBrowserSaf] === undefined )
             browser.storage.local.set({
-                skeyBrowserSaf: defaultBrowser
+                "browser_filter_safari": defaultBrowser
             }).catch(onError);
     
         if ( res[skeyBrowserOp] === undefined )
             browser.storage.local.set({
-                skeyBrowserSaf: defaultBrowser
+                "browser_filter_opera": defaultBrowser
             }).catch(onError);
 
         if ( res[skeyBrowserEdg] === undefined )
             browser.storage.local.set({
-                skeyBrowserEdg: defaultBrowser
+                "browser_filter_edge": defaultBrowser
             }).catch(onError);
        
         if ( res[skeyBrowserIE] === undefined )
             browser.storage.local.set({
-                skeyBrowserEdg: defaultBrowser
+                "browser_filter_ie": defaultBrowser
             }).catch(onError);
     });
 }

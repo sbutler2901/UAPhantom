@@ -5,19 +5,6 @@
 
 const bgpage = browser.extension.getBackgroundPage();
 
-// storage keys
-var skeyDisabled = "disabled";
-var skeyShouldChange = "should_change";
-var skeyChangeFreq = "change_freq";
-var skeyOSLinux = "os_filter_linux";
-var skeyOSMac = "os_filter_mac";
-var skeyOSWin = "os_filter_win";
-var skeyBrowserFF = "browser_filter_ff";
-var skeyBrowserChr = "browser_filter_chrome";
-var skeyBrowserSaf = "browser_filter_safari";
-var skeyBrowserOp = "browser_filter_opera";
-var skeyBrowserEdg = "browser_filter_edge";
-var skeyBrowserIE = "browser_filter_ie";
 
 //********************* Init *********************
 
@@ -51,6 +38,7 @@ function saveOptions(e) {
 
     var shouldBrowserFF = document.querySelector("#browser-ff").checked;
     var shouldBrowserChr = document.querySelector("#browser-chrome").checked;
+    var shouldBrowserChrmium = document.querySelector("#browser-chromium").checked;
     var shouldBrowserSaf = document.querySelector("#browser-safari").checked;
     var shouldBrowserOp = document.querySelector("#browser-opera").checked;
     var shouldBrowserEdg = document.querySelector("#browser-edge").checked;
@@ -71,6 +59,7 @@ function saveOptions(e) {
         "os_filter_win": shouldOSWin,
         "browser_filter_ff": shouldBrowserFF,
         "browser_filter_chrome": shouldBrowserChr,
+        "browser_filter_chromium": shouldBrowserChrmium,
         "browser_filter_safari": shouldBrowserSaf,
         "browser_filter_opera": shouldBrowserOp,
         "browser_filter_edge": shouldBrowserEdg,
@@ -84,8 +73,7 @@ function saveOptions(e) {
             else
                 bgpage.enable();
         }
-        // Only run parser and update UAs if settings have changed
-        //if ( shouldSameOS != bgpage.onlySameOS || shouldSameBrowser != bgpage.onlySameBrowser )
+        //TODO:  Only run parser and update UAs if settings have changed
         bgpage.setAvailableUAs();
         savePopup();
     }, bgpage.onError);
@@ -99,24 +87,25 @@ function restoreOptions() {
 
     browser.storage.local.get().then((res) => {
         
-        document.querySelector("#disabled").checked = res[skeyDisabled];
-        document.querySelector("#chng-freq-chk").checked = res[skeyShouldChange];
+        document.querySelector("#disabled").checked = res[bgpage.skeyDisabled];
+        document.querySelector("#chng-freq-chk").checked = res[bgpage.skeyShouldChange];
 
-        if ( res[skeyChangeFreq] === undefined ) 
+        if ( res[bgpage.skeyChangeFreq] === undefined ) 
             document.querySelector("#chng-freq-time").value = 0;
         else
-            document.querySelector("#chng-freq-time").value = res[skeyChangeFreq];
+            document.querySelector("#chng-freq-time").value = res[bgpage.skeyChangeFreq];
         
-        document.querySelector("#os-linux").checked = res[skeyOSLinux];
-        document.querySelector("#os-mac").checked = res[skeyOSMac];
-        document.querySelector("#os-win").checked = res[skeyOSWin];
+        document.querySelector("#os-linux").checked = res[bgpage.skeyOSLinux];
+        document.querySelector("#os-mac").checked = res[bgpage.skeyOSMac];
+        document.querySelector("#os-win").checked = res[bgpage.skeyOSWin];
 
-        document.querySelector("#browser-ff").checked = res[skeyBrowserFF];
-        document.querySelector("#browser-chrome").checked = res[skeyBrowserChr];
-        document.querySelector("#browser-safari").checked = res[skeyBrowserSaf];
-        document.querySelector("#browser-opera").checked = res[skeyBrowserOp];
-        document.querySelector("#browser-edge").checked = res[skeyBrowserEdg];
-        document.querySelector("#browser-ie").checked = res[skeyBrowserIE];
+        document.querySelector("#browser-ff").checked = res[bgpage.skeyBrowserFF];
+        document.querySelector("#browser-chrome").checked = res[bgpage.skeyBrowserChr];
+        document.querySelector("#browser-chromium").checked = res[bgpage.skeyBrowserChrmium];
+        document.querySelector("#browser-safari").checked = res[bgpage.skeyBrowserSaf];
+        document.querySelector("#browser-opera").checked = res[bgpage.skeyBrowserOp];
+        document.querySelector("#browser-edge").checked = res[bgpage.skeyBrowserEdg];
+        document.querySelector("#browser-ie").checked = res[bgpage.skeyBrowserIE];
  
     }, bgpage.onError);
 }
